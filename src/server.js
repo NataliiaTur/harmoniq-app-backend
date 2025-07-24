@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import router from './routers/index.js';
 
+import { corsOptions } from './middlewares/cors.js';
 import { loggerPino } from './middlewares/loggerPino.js';
 import { getEnvVar } from './utils/getEnvVar.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -15,7 +16,7 @@ const PORT = Number(getEnvVar('PORT', 3000));
 export const startServer = () => {
   const app = express();
   app.use(express.json());
-  app.use(cors());
+  app.use(cors(corsOptions));
   app.use(cookieParser());
 
   app.use(loggerPino);

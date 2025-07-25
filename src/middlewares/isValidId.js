@@ -8,3 +8,11 @@ export const isValidId = (req, res, next) => {
   }
   next();
 };
+
+export const isValidArticleId = (req, res, next) => {
+  const { articleId } = req.params;
+  if (!isValidObjectId(articleId)) {
+    throw createHttpError(400, `${articleId} is not a valid id`);
+  }
+  next();
+};

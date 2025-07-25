@@ -1,17 +1,20 @@
-import { registerUser } from '../services/auth.js';
+import { registerUser, loginUser } from '../services/auth.js';
 
 export const registerUserController = async (req, res) => {
-  try {
-    const avatarPath = req.file ? req.file.path : '';
-    const user = await registerUser(req.body, avatarPath);
+  const user = await registerUser(req.body);
 
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully registered a user!',
-      data: user,
-    });
-  } catch (error) {
-    console.error('Register error:', error);
-    res.status(400).json({ message: error.message });
-  }
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully registered a user!',
+    data: user,
+  });
+};
+
+export const loginUserController = async (req, res) => {
+  const result = await loginUser(req.body);
+  res.status(200).json({
+    status: 200,
+    message: 'Login successful',
+    data: result,
+  });
 };

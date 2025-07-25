@@ -12,7 +12,7 @@ export const createArticleSchema = Joi.object({
     'any.required': 'Article title is required',
   }),
 
-  desc: Joi.string().min(100).max(4000).trim().required().messages({
+  desc: Joi.string().min(40).max(4000).trim().required().messages({
     'string.min': 'Description must be at least 100 characters long',
     'string.max': 'Description must be at most 4000 characters long',
     'string.empty': 'Description cannot be empty',

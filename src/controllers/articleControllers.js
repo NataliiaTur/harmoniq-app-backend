@@ -1,7 +1,10 @@
+import createHttpError from 'http-errors';
 import {
   createArticle,
+  deleteArticle,
   getAllArticles,
   getArticleById,
+  patchArticle,
 } from '../services/articles.js';
 
 export const getArticlesController = async (req, res) => {
@@ -14,9 +17,13 @@ export const getArticlesController = async (req, res) => {
   });
 };
 
-export const getArticleByIdController = async (req, res) => {
+export const getArticleByIdController = async (req, res, next) => {
   const { articleId } = req.params;
   const article = await getArticleById(articleId);
+
+  if (!article) {
+    return next(createHttpError(404, 'Article not found'));
+  }
 
   res.json({
     status: 200,
@@ -33,4 +40,30 @@ export const createArticleController = async (req, res) => {
     message: 'Successfully created article',
     data: article,
   });
+};
+
+export const patchArticleController = async (req, res, next) => {
+  const { articleId } = req.params;
+  const updatedArticle = await patchArticle(articleId, req.body);
+
+  if (!updatedArticle) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
+
+  res.json({
+    status: 200,
+    message: 'Successfully patched an article',
+    data: updatedArticle,
+  });
+};
+
+export const deleteArticleController = async (req, res, next) => {
+  const { articleId } = req.params;
+  const deletedArticle = await deleteArticle(articleId);
+
+  if (!deletedArticle) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
+
+  res.status(204).send();
 };

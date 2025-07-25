@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema(
   {
@@ -50,5 +50,4 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-const User = model('User', userSchema);
-export default User;
+export const UserCollection = model('User', userSchema);

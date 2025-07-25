@@ -1,26 +1,23 @@
-export const isValidName = (name) =>
-  typeof name === 'string' && name.length >= 2 && name.length <= 32;
+import Joi from 'joi';
 
-export const isValidEmail = (email) =>
-  typeof email === 'string' && email.length <= 64;
-
-export const isValidPassword = (password) =>
-  typeof password === 'string' && password.length >= 8 && password.length <= 64;
-
-export const validateRegisterData = ({ name, email, password }) => {
-  const errors = [];
-
-  if (!isValidName(name)) {
-    errors.push('Name must be between 2 and 32 characters');
-  }
-
-  if (!isValidEmail(email)) {
-    errors.push('Incorrect email');
-  }
-
-  if (!isValidPassword(password)) {
-    errors.push('Password must be between 8 and 64 characters');
-  }
-
-  return errors;
-};
+export const registerUserSchema = Joi.object({
+  name: Joi.string().min(2).max(32).required().messages({
+    'string.base': 'Name must be a string',
+    'string.empty': 'Name is required',
+    'string.min': 'Name must be at least 2 characters',
+    'string.max': 'Name must be at most 32 characters',
+    'any.required': 'Name is required',
+  }),
+  email: Joi.string().email().max(64).required().messages({
+    'string.email': 'Invalid email format',
+    'string.empty': 'Email is required',
+    'string.max': 'Email must be at most 64 characters',
+    'any.required': 'Email is required',
+  }),
+  password: Joi.string().min(8).max(64).required().messages({
+    'string.empty': 'Password is required',
+    'string.min': 'Password must be at least 8 characters',
+    'string.max': 'Password must be at most 64 characters',
+    'any.required': 'Password is required',
+  }),
+});

@@ -26,18 +26,13 @@ export const registerUser = async ({ name, email, password }) => {
 
   const hashedPassword = await hashPassword(password);
 
-  const newUser = new User.create({
+  const newUser = await User.create({
     name,
     email,
     password: hashedPassword,
   });
 
-  await newUser.save();
-  return {
-    _id: newUser._id,
-    name: newUser.name,
-    email: newUser.email,
-  };
+  return newUser;
 };
 
 //login

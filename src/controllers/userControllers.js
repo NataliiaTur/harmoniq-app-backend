@@ -1,12 +1,12 @@
-import { User } from '../models/User.js';
-import { Article } from '../models/Article.js';
 import createError from 'http-errors';
+import { ArticlesCollection } from '../db/models/article.js';
+import { UserCollection } from '../db/models/user.js';
 
 export const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = await User.findById(id).select('name email avatarURL');
+    const user = await UserCollection.findById(id).select('name email avatarURL');
 
     if (!user) {
       throw createError(404, 'User not found');
@@ -28,7 +28,7 @@ export const getSavedArticles = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findById(userId).populate({
+    const user = await UserCollection.findById(userId).populate({
       path: 'savedArticles',
       select: 'title description photo author createdAt',
       populate: {
@@ -53,7 +53,7 @@ export const getCreatedArticles = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    const articles = await Article.find({ author: userId });
+    const articles = await ArticlesCollection.find({ author: userId });
 
     res.json({
       status: 'success',
@@ -72,12 +72,12 @@ export const saveArticle = async (req, res, next) => {
     const { articleId } = req.params;
     const userId = req.user.id;
 
-    const article = await Article.findById(articleId);
+    const article = await ArticlesCollection.findById(articleId);
     if (!article) {
       throw createError(404, 'Article not found');
     }
 
-    const user = await User.findById(userId);
+    const user = await UserCollection.findById(userId);
 
     if (user.savedArticles.includes(articleId)) {
       throw createError(409, 'Article already saved');
@@ -103,7 +103,7 @@ export const removeSavedArticle = async (req, res, next) => {
     const { articleId } = req.params;
     const userId = req.user.id;
 
-    const user = await User.findById(userId);
+    const user = await UserCollection.findById(userId);
 
     const index = user.savedArticles.indexOf(articleId);
     if (index === -1) {

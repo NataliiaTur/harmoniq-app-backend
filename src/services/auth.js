@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
-import User from '../db/models/user.js';
+import { UserCollection } from '../db/models/user.js';
 import { registerUserSchema } from '../validation/authValidation.js';
 import {
   verifyRefreshToken,
@@ -13,7 +13,7 @@ export const hashPassword = async (password) => {
 };
 
 export const findUserByEmail = async (email) => {
-  return await User.findOne({ email });
+  return await UserCollection.findOne({ email });
 };
 
 //registration
@@ -30,7 +30,7 @@ export const registerUser = async ({ name, email, password }) => {
 
   const hashedPassword = await hashPassword(password);
 
-  const newUser = await User.create({
+  const newUser = await UserCollection.create({
     name,
     email,
     password: hashedPassword,
@@ -41,7 +41,7 @@ export const registerUser = async ({ name, email, password }) => {
 
 //login
 export const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email });
+  const user = await UserCollection.findOne({ email });
   if (!user) {
     throw createHttpError(401, 'Invalid email or password');
   }
@@ -83,7 +83,7 @@ export const refreshTokens = async (token) => {
     throw createHttpError(403, 'Non-valid refresh token');
   }
 
-  const user = await User.findById(payload.id);
+  const user = await UserCollection.findById(payload.id);
   if (!user || user.refreshToken !== token) {
     throw createHttpError(403, 'Invalid refresh token');
   }

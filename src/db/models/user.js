@@ -22,6 +22,10 @@ const userSchema = new Schema(
       type: String, // url
       default: '',
     },
+    refreshToken: {
+      type: String,
+      default: '',
+    },
     articlesAmount: {
       type: Number,
       default: 0,

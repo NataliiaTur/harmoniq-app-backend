@@ -2,7 +2,11 @@ import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import User from '../db/models/user.js';
 import { registerUserSchema } from '../validation/authValidation.js';
-import { generateAccessToken, generateRefreshToken } from '../utils/token.js';
+import {
+  verifyRefreshToken,
+  generateAccessToken,
+  generateRefreshToken,
+} from '../utils/token.js';
 
 export const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
@@ -63,5 +67,35 @@ export const loginUser = async ({ email, password }) => {
       name: user.name,
       email: user.email,
     },
+  };
+};
+
+//refresh
+export const refreshTokens = async (token) => {
+  if (!token) {
+    throw createHttpError(401, 'Refresh token is required');
+  }
+
+  let payload;
+  try {
+    payload = verifyRefreshToken(token);
+  } catch {
+    throw createHttpError(403, 'Non-valid refresh token');
+  }
+
+  const user = await User.findById(payload.id);
+  if (!user || user.refreshToken !== token) {
+    throw createHttpError(403, 'Invalid refresh token');
+  }
+
+  const newAccessToken = generateAccessToken({ id: user._id });
+  const newRefreshToken = generateRefreshToken({ id: user._id });
+
+  user.refreshToken = newRefreshToken;
+  await user.save();
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
   };
 };

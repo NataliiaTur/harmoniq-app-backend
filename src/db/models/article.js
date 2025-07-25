@@ -9,10 +9,6 @@ const articleSchema = new Schema(
       type: String,
       required: true,
     },
-    desc: {
-      type: String,
-      required: true,
-    },
     article: {
       type: String,
       required: true,
@@ -25,11 +21,6 @@ const articleSchema = new Schema(
     rate: {
       type: Number,
       default: 0,
-    },
-    date: {
-      type: String,
-      required: true,
-      match: [/^\d{4}-\d{2}-\d{2}$/, 'Дата повинна бути в форматі YYYY-MM-DD'],
     },
   },
   {

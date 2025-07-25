@@ -12,16 +12,11 @@ export const createArticleSchema = Joi.object({
     'any.required': 'Article title is required',
   }),
 
-  desc: Joi.string().min(40).max(4000).trim().required().messages({
-    'string.min': 'Description must be at least 100 characters long',
-    'string.max': 'Description must be at most 4000 characters long',
-    'string.empty': 'Description cannot be empty',
-    'any.required': 'Description is required',
-  }),
-
-  article: Joi.string().trim().required().messages({
+  article: Joi.string().min(40).max(4000).trim().required().messages({
     'string.empty': 'Article content cannot be empty',
     'any.required': 'Article content is required',
+    'string.min': 'Description must be at least 100 characters long',
+    'string.max': 'Description must be at most 4000 characters long',
   }),
 
   ownerId: Joi.string().length(24).hex().required().messages({
@@ -35,15 +30,6 @@ export const createArticleSchema = Joi.object({
     'number.base': 'The rate must be a number',
     'number.min': 'The rate field cannot be less than 0.',
   }),
-
-  date: Joi.string()
-    .pattern(/^\d{4}-\d{2}-\d{2}$/)
-    .required()
-    .messages({
-      'string.pattern.base': 'The date must be in the format YYYY-MM-DD',
-      'string.empty': 'The date field cannot be empty.',
-      'any.required': 'The date field is required.',
-    }),
 });
 
 export const updateArticleSchema = Joi.object({
@@ -58,14 +44,10 @@ export const updateArticleSchema = Joi.object({
     'string.empty': 'Article title cannot be empty',
   }),
 
-  desc: Joi.string().min(100).max(4000).trim().messages({
+  article: Joi.string().min(100).max(4000).trim().messages({
+    'string.empty': 'Article content cannot be empty',
     'string.min': 'Description must be at least 100 characters long',
     'string.max': 'Description must be at most 4000 characters long',
-    'string.empty': 'Description cannot be empty',
-  }),
-
-  article: Joi.string().trim().messages({
-    'string.empty': 'Article content cannot be empty',
   }),
 })
   .min(1) // гарантує, що запит не буде порожнім

@@ -9,7 +9,7 @@ export const getArticlesController = async (req, res) => {
 
   res.json({
     status: 200,
-    message: 'Successfully found students!',
+    message: 'Successfully found articles!',
     data: articles,
   });
 };
@@ -17,14 +17,6 @@ export const getArticlesController = async (req, res) => {
 export const getArticleByIdController = async (req, res) => {
   const { articleId } = req.params;
   const article = await getArticleById(articleId);
-
-  if (!article) {
-    res.json({
-      status: 404,
-      message: 'Article not found',
-    });
-    return;
-  }
 
   res.json({
     status: 200,

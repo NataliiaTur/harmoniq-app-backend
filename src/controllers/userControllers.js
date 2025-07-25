@@ -1,126 +1,90 @@
-import createError from 'http-errors';
-import { ArticlesCollection } from '../db/models/article.js';
-import { UserCollection } from '../db/models/user.js';
+import asyncHandler from 'express-async-handler';
+import {
+  getAllUsersService,
+  getUserByIdService,
+  getSavedArticlesService,
+  getCreatedArticlesService,
+  saveArticleService,
+  removeSavedArticleService,
+} from '../services/users.js';
 
-export const getUserById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+/**
+ * GET /api/users
+ * Отримати всіх користувачів
+ */
+export const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await getAllUsersService();
+  res.json({
+    status: 'success',
+    message: 'Users fetched successfully',
+    data: users,
+  });
+});
 
-    const user = await UserCollection.findById(id).select('name email avatarURL');
+/**
+ * GET /api/users/:id
+ * Отримати користувача по ID
+ */
+export const getUserById = asyncHandler(async (req, res) => {
+  const user = await getUserByIdService(req.params.id);
+  res.json({
+    status: 'success',
+    message: 'User fetched successfully',
+    data: user,
+  });
+});
 
-    if (!user) {
-      throw createError(404, 'User not found');
-    }
+/**
+ * GET /api/users/saved
+ * Отримати збережені статті авторизованого користувача
+ */
+export const getSavedArticles = asyncHandler(async (req, res) => {
+  const saved = await getSavedArticlesService(req.user.id);
+  res.json({
+    status: 'success',
+    message: 'Saved articles fetched successfully',
+    data: saved,
+  });
+});
 
-    res.json({
-      status: 'success',
-      code: 200,
-      data: {
-        user,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+/**
+ * GET /api/users/created
+ * Отримати створені статті авторизованого користувача
+ */
+export const getCreatedArticles = asyncHandler(async (req, res) => {
+  const created = await getCreatedArticlesService(req.user.id);
+  res.json({
+    status: 'success',
+    message: 'Created articles fetched successfully',
+    data: created,
+  });
+});
 
-export const getSavedArticles = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
+/**
+ * POST /api/users/save/:articleId
+ * Зберегти статтю користувачем
+ */
+export const saveArticle = asyncHandler(async (req, res) => {
+  const saved = await saveArticleService(req.user.id, req.params.articleId);
+  res.json({
+    status: 'success',
+    message: 'Article saved successfully',
+    data: saved,
+  });
+});
 
-    const user = await UserCollection.findById(userId).populate({
-      path: 'savedArticles',
-      select: 'title description photo author createdAt',
-      populate: {
-        path: 'author',
-        select: 'name avatarURL',
-      },
-    });
-
-    res.json({
-      status: 'success',
-      code: 200,
-      data: {
-        savedArticles: user.savedArticles,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getCreatedArticles = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-
-    const articles = await ArticlesCollection.find({ author: userId });
-
-    res.json({
-      status: 'success',
-      code: 200,
-      data: {
-        createdArticles: articles,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const saveArticle = async (req, res, next) => {
-  try {
-    const { articleId } = req.params;
-    const userId = req.user.id;
-
-    const article = await ArticlesCollection.findById(articleId);
-    if (!article) {
-      throw createError(404, 'Article not found');
-    }
-
-    const user = await UserCollection.findById(userId);
-
-    if (user.savedArticles.includes(articleId)) {
-      throw createError(409, 'Article already saved');
-    }
-
-    user.savedArticles.push(articleId);
-    await user.save();
-
-    res.status(201).json({
-      status: 'success',
-      message: 'Article saved successfully',
-      data: {
-        savedArticles: user.savedArticles,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const removeSavedArticle = async (req, res, next) => {
-  try {
-    const { articleId } = req.params;
-    const userId = req.user.id;
-
-    const user = await UserCollection.findById(userId);
-
-    const index = user.savedArticles.indexOf(articleId);
-    if (index === -1) {
-      throw createError(404, 'Article not found in saved list');
-    }
-
-    user.savedArticles.splice(index, 1);
-    await user.save();
-
-    res.json({
-      status: 'success',
-      message: 'Article removed from saved list',
-      data: {
-        savedArticles: user.savedArticles,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+/**
+ * DELETE /api/users/remove/:articleId
+ * Видалити статтю зі збережених
+ */
+export const removeSavedArticle = asyncHandler(async (req, res) => {
+  const updated = await removeSavedArticleService(
+    req.user.id,
+    req.params.articleId,
+  );
+  res.json({
+    status: 'success',
+    message: 'Article removed from saved list',
+    data: updated,
+  });
+});

@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors';
 import {
   createArticle,
   deleteArticle,
@@ -6,6 +5,9 @@ import {
   getArticleById,
   patchArticle,
 } from '../services/articles.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const getArticlesController = async (req, res) => {
   const articles = await getAllArticles();
@@ -17,13 +19,9 @@ export const getArticlesController = async (req, res) => {
   });
 };
 
-export const getArticleByIdController = async (req, res, next) => {
+export const getArticleByIdController = async (req, res) => {
   const { articleId } = req.params;
   const article = await getArticleById(articleId);
-
-  if (!article) {
-    return next(createHttpError(404, 'Article not found'));
-  }
 
   res.json({
     status: 200,
@@ -33,37 +31,57 @@ export const getArticleByIdController = async (req, res, next) => {
 };
 
 export const createArticleController = async (req, res) => {
-  const article = await createArticle(req.body, req.user.id);
+  const photo = req.file;
+  let photoUrl = null;
+
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
+  }
+
+  const newArticle = await createArticle(
+    { ...req.body, img: photoUrl },
+    req.user.id,
+  );
 
   res.status(201).json({
     status: 201,
     message: 'Successfully created article',
-    data: article,
+    data: newArticle,
   });
 };
 
-export const patchArticleController = async (req, res, next) => {
+export const patchArticleController = async (req, res) => {
   const { articleId } = req.params;
-  const updatedArticle = await patchArticle(articleId, req.body);
+  const photo = req.file;
+  let photoUrl;
 
-  if (!updatedArticle) {
-    return next(createHttpError(404, 'Contact not found'));
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
+
+  const result = await patchArticle(articleId, {
+    ...req.body,
+    img: photoUrl, // ✅ URL як рядок (тільки якщо фото завантажено)
+  });
 
   res.json({
     status: 200,
     message: 'Successfully patched an article',
-    data: updatedArticle,
+    data: result,
   });
 };
 
-export const deleteArticleController = async (req, res, next) => {
+export const deleteArticleController = async (req, res) => {
   const { articleId } = req.params;
-  const deletedArticle = await deleteArticle(articleId);
-
-  if (!deletedArticle) {
-    return next(createHttpError(404, 'Contact not found'));
-  }
+  await deleteArticle(articleId);
 
   res.status(204).send();
 };

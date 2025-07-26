@@ -11,6 +11,7 @@ import { createArticleSchema } from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidArticleId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.get(
 );
 router.post(
   '/',
+  upload.single('img'),
   validateBody(createArticleSchema),
   authenticate,
   ctrlWrapper(createArticleController),

@@ -25,15 +25,25 @@ export const createArticle = async (payload, userId) => {
 };
 
 export const patchArticle = async (articleId, payload) => {
-  const updatedArticle = await ArticlesCollection.findOneAndUpdate(
-    { _id: articleId },
+  const updatedArticle = await ArticlesCollection.findByIdAndUpdate(
+    articleId,
     payload,
     { new: true },
   );
+
+  if (!updatedArticle) {
+    throw createHttpError(404, 'Article not found');
+  }
+
   return updatedArticle;
 };
 
 export const deleteArticle = async (articleId) => {
   const article = await ArticlesCollection.findOneAndDelete(articleId);
+
+  if (!article) {
+    throw createHttpError(404, 'Article not found');
+  }
+
   return article;
 };

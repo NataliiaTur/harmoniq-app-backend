@@ -6,7 +6,7 @@ import createError from 'http-errors';
  * Отримати всіх користувачів без паролів
  */
 export const getAllUsersService = async () => {
-  return await UserCollection.find({}, '_id name email');
+  return await UserCollection.find({});
 };
 
 /**
@@ -14,7 +14,7 @@ export const getAllUsersService = async () => {
  * @param {string} id
  */
 export const getUserByIdService = async (id) => {
-  const user = await UserCollection.findById(id).select('name email avatarURL');
+  const user = await UserCollection.findById(id);
   if (!user) {
     throw createError(404, 'User not found');
   }

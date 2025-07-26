@@ -1,0 +1,18 @@
+UserResponse:
+  type: object
+  properties:
+    status:
+      type: integer
+      example: 201
+    message:
+      type: string
+      example: Successfully registered a user!
+    data:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string

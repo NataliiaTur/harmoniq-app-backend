@@ -1,0 +1,13 @@
+Unauthorized:
+  description: Invalid or expired token
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          status:
+            type: integer
+            example: 401
+          message:
+            type: string
+            example: Invalid or expired token

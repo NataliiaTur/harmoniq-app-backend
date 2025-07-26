@@ -1,0 +1,26 @@
+authLogout:
+  post:
+    tags: [Auth]
+    operationId: authLogout
+    summary: Endpoint for logging out the user by invalidating the refresh token
+    description: |
+      Logs out the currently authenticated user by clearing their stored refresh token.
+
+      - Requires a **valid access token** in the Authorization header
+      - Clears the **refresh token** from the user record in the database
+      - Should be called when the user logs out manually or ends the session
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Logout successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Logout successful
+      '401':
+        $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'

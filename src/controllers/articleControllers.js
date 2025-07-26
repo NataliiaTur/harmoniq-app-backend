@@ -35,11 +35,7 @@ export const createArticleController = async (req, res) => {
   let photoUrl = null;
 
   if (photo) {
-    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
       photoUrl = await saveFileToCloudinary(photo);
-    } else {
-      photoUrl = await saveFileToUploadDir(photo);
-    }
   }
 
   const newArticle = await createArticle(

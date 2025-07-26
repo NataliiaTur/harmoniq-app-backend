@@ -7,12 +7,7 @@ import {
   saveArticleService,
   removeSavedArticleService,
 } from '../services/users.js';
-import { ArticlesCollection } from '../db/models/article.js';
 
-/**
- * GET /api/users
- * Отримати всіх користувачів
- */
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();
   res.json({
@@ -89,11 +84,3 @@ export const removeSavedArticle = asyncHandler(async (req, res) => {
     data: updated,
   });
 });
-
-
-
-
-export const testArticlesOwners = async () => {
-  const articles = await ArticlesCollection.find().limit(5);
-  console.log(articles.map((a) => ({ id: a._id, ownerId: a.ownerId })));
-};

@@ -7,13 +7,11 @@ import {
   getArticlesController,
   patchArticleController,
 } from '../controllers/articleControllers.js';
-import {
-  createArticleSchema,
-  updateArticleSchema,
-} from '../validation/articleValidation.js';
+import { createArticleSchema } from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidArticleId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = Router();
 

@@ -31,21 +31,27 @@ export const getArticleByIdController = async (req, res) => {
 };
 
 export const createArticleController = async (req, res) => {
-  const article = await createArticle(req.body, req.user.id);
+  const photo = req.file;
+  let photoUrl = null;
 
-    res.status(201).json({
-      status: 201,
-      message: 'Successfully created article',
-      data: newArticle,
-    });
-  } catch (error) {
-    console.error('Create article error:', error);
-    res.status(500).json({
-      status: 500,
-      message: 'Something went wrong',
-      data: error.message,
-    });
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
+
+  const newArticle = await createArticle(
+    { ...req.body, img: photoUrl },
+    req.user.id,
+  );
+
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created article',
+    data: newArticle,
+  });
 };
 
 export const patchArticleController = async (req, res) => {

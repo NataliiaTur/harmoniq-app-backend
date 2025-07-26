@@ -19,13 +19,6 @@ export const createArticleSchema = Joi.object({
     'string.max': 'Description must be at most 4000 characters long',
   }),
 
-  ownerId: Joi.string().length(24).hex().required().messages({
-    'string.base': 'ownerId must be a string',
-    'string.length': 'ownerId must contain exactly 24 characters',
-    'string.hex': 'ownerId must be in hex format (0-9, a-f)',
-    'any.required': 'Field ownerId is required',
-  }),
-
   rate: Joi.number().min(0).default(0).messages({
     'number.base': 'The rate must be a number',
     'number.min': 'The rate field cannot be less than 0.',

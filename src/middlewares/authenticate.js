@@ -1,19 +1,27 @@
-// import jwt from 'jsonwebtoken';
-// import { UserCollection } from '../db/models/user.js';
+import createHttpError from 'http-errors';
+import { verifyAccessToken } from '../utils/token.js';
+import { UserCollection } from '../db/models/user.js';
 
-// export const authenticate = async (req, res, next) => {
-//   try {
-//     const { token } = req.cookies;
-//     if (!token) throw new Error('Unauthorized');
+export const authenticate = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-//     const { id } = jwt.verify(token, process.env.JWT_SECRET);
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw createHttpError(401, 'Not authorized (no token)');
+    }
 
-//     const user = await UserCollection.findById(id);
-//     if (!user) throw new Error('Unauthorized');
+    const token = authHeader.split(' ')[1];
 
-//     req.user = user;
-//     next();
-//   } catch {
-//     res.status(401).json({ message: 'Not authorized' });
-//   }
-// };
+    const payload = verifyAccessToken(token);
+    const user = await UserCollection.findById(payload.id);
+
+    if (!user) {
+      throw createHttpError(401, 'Not authorized (user not found)');
+    }
+
+    req.user = user;
+    next();
+  } catch {
+    next(createHttpError(401, 'Not authorized'));
+  }
+};

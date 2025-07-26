@@ -1,4 +1,9 @@
-import { refreshTokens, registerUser, loginUser } from '../services/auth.js';
+import {
+  refreshTokens,
+  registerUser,
+  loginUser,
+  logoutUser,
+} from '../services/auth.js';
 
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
@@ -29,5 +34,15 @@ export const refreshTokensController = async (req, res) => {
     status: 200,
     message: 'Tokens refreshed',
     data: tokens,
+  });
+};
+
+export const logoutUserController = async (req, res) => {
+  await logoutUser(req.user._id);
+
+  res.status(200).json({
+    status: 200,
+    message: 'Logout successful',
+    data: null,
   });
 };

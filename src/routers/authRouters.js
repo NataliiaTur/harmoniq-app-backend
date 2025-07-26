@@ -12,7 +12,7 @@ import {
   loginUserSchema,
   refreshTokenSchema,
 } from '../validation/authValidation.js';
-import { auth } from '../middlewares/authenticate.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
@@ -34,6 +34,6 @@ router.post(
   ctrlWrapper(refreshTokensController),
 );
 
-router.post('/logout', auth, ctrlWrapper(logoutUserController));
+router.post('/logout', authenticate, ctrlWrapper(logoutUserController));
 
 export default router;

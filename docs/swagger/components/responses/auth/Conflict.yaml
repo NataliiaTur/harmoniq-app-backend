@@ -1,0 +1,13 @@
+Conflict:
+  description: Email already registered
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          status:
+            type: integer
+            example: 409
+          message:
+            type: string
+            example: Email already registered

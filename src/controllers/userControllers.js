@@ -7,15 +7,12 @@ import {
   saveArticleService,
   removeSavedArticleService,
 } from '../services/users.js';
+
 import { ArticlesCollection } from '../db/models/article.js';
 import { UserCollection } from '../db/models/user.js';
 import fs from 'fs/promises';
 import { cloudinary } from '../services/cloudinary.js';
 
-/**
- * GET /api/users
- * Отримати всіх користувачів
- */
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();
   res.json({

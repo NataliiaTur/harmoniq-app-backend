@@ -13,8 +13,7 @@ import {
 } from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidArticleId } from '../middlewares/isValidId.js';
-import { upload } from '../middlewares/multer.js';
-// import { authenticate } from '../middlewares/authenticate.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
 
@@ -28,21 +27,19 @@ router.post(
   '/',
   upload.single('img'),
   validateBody(createArticleSchema),
-  // authenticate,
+  authenticate,
   ctrlWrapper(createArticleController),
 );
 router.patch(
   '/:articleId',
   isValidArticleId,
-  upload.single('img'),
-  validateBody(updateArticleSchema),
-  // authenticate,
+  authenticate,
   ctrlWrapper(patchArticleController),
 );
 router.delete(
   '/:articleId',
   isValidArticleId,
-  // authenticate,
+  authenticate,
   ctrlWrapper(deleteArticleController),
 );
 

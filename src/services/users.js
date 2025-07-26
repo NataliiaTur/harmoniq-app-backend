@@ -26,14 +26,7 @@ export const getUserByIdService = async (id) => {
  * @param {string} userId
  */
 export const getSavedArticlesService = async (userId) => {
-  const user = await UserCollection.findById(userId).populate({
-    path: 'savedArticles',
-    select: 'title description photo author createdAt',
-    populate: {
-      path: 'author',
-      select: 'name avatarURL',
-    },
-  });
+  const user = await UserCollection.findById(userId).populate('savedArticles');
 
   if (!user) {
     throw createError(404, 'User not found');
@@ -47,7 +40,7 @@ export const getSavedArticlesService = async (userId) => {
  * @param {string} userId
  */
 export const getCreatedArticlesService = async (userId) => {
-  return await ArticlesCollection.find({ author: userId });
+  return await ArticlesCollection.find({ ownerId: userId });
 };
 
 /**

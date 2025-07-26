@@ -99,3 +99,15 @@ export const refreshTokens = async (token) => {
     refreshToken: newRefreshToken,
   };
 };
+
+// logout
+export const logoutUser = async (userId) => {
+  const user = await UserCollection.findById(userId);
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  user.refreshToken = '';
+  await user.save();
+};

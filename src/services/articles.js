@@ -16,9 +16,11 @@ export const getArticleById = async (articleId) => {
   return article;
 };
 
-export const createArticle = async (payload) => {
-  const article = await ArticlesCollection.create(payload);
-
+export const createArticle = async (payload, userId) => {
+  const article = await ArticlesCollection.create({
+    ...payload,
+    ownerId: userId,
+  });
   return article;
 };
 

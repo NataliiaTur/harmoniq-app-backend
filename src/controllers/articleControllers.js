@@ -31,41 +31,7 @@ export const getArticleByIdController = async (req, res) => {
 };
 
 export const createArticleController = async (req, res) => {
-  try {
-    const { title, article, rate } = req.body;
-    const photo = req.file;
-
-    let photoUrl;
-
-    if (photo) {
-      try {
-        if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
-          photoUrl = await saveFileToCloudinary(photo);
-        } else {
-          photoUrl = await saveFileToUploadDir(photo);
-        }
-      } catch (uploadErr) {
-        console.error('Image upload failed:', uploadErr);
-        return res.status(500).json({
-          status: 500,
-          message: 'Failed to upload image',
-          data: uploadErr.message,
-        });
-      }
-    }
-
-    const articleData = {
-      title,
-      article,
-      rate: rate || 0,
-      ownerId: req.body.ownerId, // тимчасово так, або req.user._id, якщо є авторизація
-    };
-
-    if (photoUrl) {
-      articleData.img = photoUrl;
-    }
-
-    const newArticle = await createArticle(articleData);
+  const article = await createArticle(req.body, req.user.id);
 
     res.status(201).json({
       status: 201,

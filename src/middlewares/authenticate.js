@@ -1,5 +1,5 @@
 // import jwt from 'jsonwebtoken';
-// import { User } from '../db/models/user';
+// import { UserCollection } from '../db/models/user.js';
 
 // export const authenticate = async (req, res, next) => {
 //   try {
@@ -8,7 +8,7 @@
 
 //     const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
-//     const user = await User.findById(id);
+//     const user = await UserCollection.findById(id);
 //     if (!user) throw new Error('Unauthorized');
 
 //     req.user = user;

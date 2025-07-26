@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors';
 import {
   createArticle,
   deleteArticle,
@@ -6,6 +5,9 @@ import {
   getArticleById,
   patchArticle,
 } from '../services/articles.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { getEnvVar } from '../utils/getEnvVar.js';
 
 export const getArticlesController = async (req, res) => {
   const articles = await getAllArticles();
@@ -17,13 +19,9 @@ export const getArticlesController = async (req, res) => {
   });
 };
 
-export const getArticleByIdController = async (req, res, next) => {
+export const getArticleByIdController = async (req, res) => {
   const { articleId } = req.params;
   const article = await getArticleById(articleId);
-
-  if (!article) {
-    return next(createHttpError(404, 'Article not found'));
-  }
 
   res.json({
     status: 200,
@@ -33,37 +31,85 @@ export const getArticleByIdController = async (req, res, next) => {
 };
 
 export const createArticleController = async (req, res) => {
-  const article = await createArticle(req.body);
+  try {
+    const { title, article, rate } = req.body;
+    const photo = req.file;
 
-  res.status(201).json({
-    status: 201,
-    message: 'Successfully created article',
-    data: article,
-  });
+    let photoUrl;
+
+    if (photo) {
+      try {
+        if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+          photoUrl = await saveFileToCloudinary(photo);
+        } else {
+          photoUrl = await saveFileToUploadDir(photo);
+        }
+      } catch (uploadErr) {
+        console.error('Image upload failed:', uploadErr);
+        return res.status(500).json({
+          status: 500,
+          message: 'Failed to upload image',
+          data: uploadErr.message,
+        });
+      }
+    }
+
+    const articleData = {
+      title,
+      article,
+      rate: rate || 0,
+      ownerId: req.body.ownerId, // тимчасово так, або req.user._id, якщо є авторизація
+    };
+
+    if (photoUrl) {
+      articleData.img = photoUrl;
+    }
+
+    const newArticle = await createArticle(articleData);
+
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created article',
+      data: newArticle,
+    });
+  } catch (error) {
+    console.error('Create article error:', error);
+    res.status(500).json({
+      status: 500,
+      message: 'Something went wrong',
+      data: error.message,
+    });
+  }
 };
 
-export const patchArticleController = async (req, res, next) => {
+export const patchArticleController = async (req, res) => {
   const { articleId } = req.params;
-  const updatedArticle = await patchArticle(articleId, req.body);
+  const photo = req.file;
+  let photoUrl;
 
-  if (!updatedArticle) {
-    return next(createHttpError(404, 'Contact not found'));
+  if (photo) {
+    if (getEnvVar('ENABLE_CLOUDINARY') === 'true') {
+      photoUrl = await saveFileToCloudinary(photo);
+    } else {
+      photoUrl = await saveFileToUploadDir(photo);
+    }
   }
+
+  const result = await patchArticle(articleId, {
+    ...req.body,
+    img: photoUrl, // ✅ URL як рядок (тільки якщо фото завантажено)
+  });
 
   res.json({
     status: 200,
     message: 'Successfully patched an article',
-    data: updatedArticle,
+    data: result,
   });
 };
 
-export const deleteArticleController = async (req, res, next) => {
+export const deleteArticleController = async (req, res) => {
   const { articleId } = req.params;
-  const deletedArticle = await deleteArticle(articleId);
-
-  if (!deletedArticle) {
-    return next(createHttpError(404, 'Contact not found'));
-  }
+  await deleteArticle(articleId);
 
   res.status(204).send();
 };

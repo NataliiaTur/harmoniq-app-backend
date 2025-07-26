@@ -7,9 +7,14 @@ import {
   getArticlesController,
   patchArticleController,
 } from '../controllers/articleControllers.js';
-import { createArticleSchema } from '../validation/articleValidation.js';
+import {
+  createArticleSchema,
+  updateArticleSchema,
+} from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidArticleId } from '../middlewares/isValidId.js';
+import { upload } from '../middlewares/multer.js';
+// import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
 
@@ -21,17 +26,23 @@ router.get(
 );
 router.post(
   '/',
+  upload.single('img'),
   validateBody(createArticleSchema),
+  // authenticate,
   ctrlWrapper(createArticleController),
 );
 router.patch(
   '/:articleId',
   isValidArticleId,
+  upload.single('img'),
+  validateBody(updateArticleSchema),
+  // authenticate,
   ctrlWrapper(patchArticleController),
 );
 router.delete(
   '/:articleId',
   isValidArticleId,
+  // authenticate,
   ctrlWrapper(deleteArticleController),
 );
 

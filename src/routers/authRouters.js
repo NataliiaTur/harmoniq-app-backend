@@ -5,12 +5,14 @@ import {
   registerUserController,
   loginUserController,
   refreshTokensController,
+  logoutUserController,
 } from '../controllers/authControllers.js';
 import {
   registerUserSchema,
   loginUserSchema,
   refreshTokenSchema,
 } from '../validation/authValidation.js';
+import { auth } from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
@@ -31,5 +33,7 @@ router.post(
   validateBody(refreshTokenSchema),
   ctrlWrapper(refreshTokensController),
 );
+
+router.post('/logout', auth, ctrlWrapper(logoutUserController));
 
 export default router;

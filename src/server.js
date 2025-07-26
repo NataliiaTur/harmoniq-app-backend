@@ -10,7 +10,7 @@ import { getEnvVar } from './utils/getEnvVar.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
-import userRouters from './routers/userRouters.js';
+// import userRouters from './routers/userRouters.js';
 
 const PORT = Number(getEnvVar('PORT', 3000));
 
@@ -19,7 +19,7 @@ export const startServer = () => {
   app.use(express.json());
   app.use(cors(corsOptions));
   app.use(cookieParser());
-  app.use('/api/users', userRouters);
+  // app.use('/api/users', userRouters);
 
   app.use(loggerPino);
 

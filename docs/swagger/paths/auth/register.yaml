@@ -1,0 +1,29 @@
+authRegister:
+  post:
+    tags: [Auth]
+    operationId: authRegister
+    security: []
+    summary: Endpoint for user registration
+    description: |
+      Registers a new user. Performs uniqueness checks and creates a new user record.
+
+      - **Name**: required, 2–32 characters
+      - **Email**: required, max 64 characters
+      - **Password**: required, 8–64 characters
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/UserRegister.yaml#/UserRegister'
+    responses:
+      '201':
+        description: Successfully registered a user!
+        content:
+          application/json:
+            schema:
+              $ref: '../../components/schemas/auth/UserResponse.yaml#/UserResponse'
+      '400':
+        $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
+      '409':
+        $ref: '../../components/responses/auth/Conflict.yaml#/Conflict'

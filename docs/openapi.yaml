@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: Harmoniq App API
+  description: API documentation for the Harmoniq application backend
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://127.0.0.1:3000
+    description: Local development server.
+  - url: https://harmoniq-app-backend.onrender.com
+    description: Production server.
+
+tags:
+  - name: Auth
+    description: Auth operations.
+
+paths:
+  /auth/register:
+    $ref: 'swagger/paths/auth/register.yaml#/authRegister'
+  /auth/login:
+    $ref: 'swagger/paths/auth/login.yaml#/authLogin'
+  /auth/logout:
+    $ref: 'swagger/paths/auth/logout.yaml#/authLogout'
+  /auth/refresh:
+    $ref: 'swagger/paths/auth/refresh.yaml#/authRefresh'
+
+components:
+  schemas:
+    LoginResponse:
+      $ref: swagger/components/schemas/auth/LoginResponse.yaml#/LoginResponse
+    TokenResponse:
+      $ref: swagger/components/schemas/auth/TokenResponse.yaml#/TokenResponse
+    UserLogin:
+      $ref: swagger/components/schemas/auth/UserLogin.yaml#/UserLogin
+    UserRegister:
+      $ref: swagger/components/schemas/auth/UserRegister.yaml#/UserRegister
+    UserResponse:
+      $ref: swagger/components/schemas/auth/UserResponse.yaml#/UserResponse
+
+  responses:
+    BadRequest:
+      $ref: swagger/components/responses/auth/BadRequest.yaml#/BadRequest
+    Conflict:
+      $ref: swagger/components/responses/auth/Conflict.yaml#/Conflict
+    Forbidden:
+      $ref: swagger/components/responses/auth/Forbidden.yaml#/Forbidden
+    Unauthorized:
+      $ref: swagger/components/responses/auth/Unauthorized.yaml#/Unauthorized
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

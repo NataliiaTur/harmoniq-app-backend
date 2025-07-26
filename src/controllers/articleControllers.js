@@ -33,7 +33,7 @@ export const getArticleByIdController = async (req, res, next) => {
 };
 
 export const createArticleController = async (req, res) => {
-  const article = await createArticle(req.body);
+  const article = await createArticle(req.body, req.user.id);
 
   res.status(201).json({
     status: 201,

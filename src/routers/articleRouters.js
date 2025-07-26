@@ -10,6 +10,7 @@ import {
 import { createArticleSchema } from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidArticleId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
 
 const router = Router();
 
@@ -22,16 +23,19 @@ router.get(
 router.post(
   '/',
   validateBody(createArticleSchema),
+  authenticate,
   ctrlWrapper(createArticleController),
 );
 router.patch(
   '/:articleId',
   isValidArticleId,
+  authenticate,
   ctrlWrapper(patchArticleController),
 );
 router.delete(
   '/:articleId',
   isValidArticleId,
+  authenticate,
   ctrlWrapper(deleteArticleController),
 );
 

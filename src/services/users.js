@@ -1,18 +1,12 @@
 import { UserCollection } from '../db/models/user.js';
 import { ArticlesCollection } from '../db/models/article.js';
 import createError from 'http-errors';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
-/**
- * Отримати всіх користувачів без паролів
- */
 export const getAllUsersService = async () => {
   return await UserCollection.find({});
 };
 
-/**
- * Отримати користувача по ID
- * @param {string} id
- */
 export const getUserByIdService = async (id) => {
   const user = await UserCollection.findById(id);
   if (!user) {
@@ -21,10 +15,6 @@ export const getUserByIdService = async (id) => {
   return user;
 };
 
-/**
- * Отримати збережені статті користувача
- * @param {string} userId
- */
 export const getSavedArticlesService = async (userId) => {
   const user = await UserCollection.findById(userId).populate('savedArticles');
 
@@ -35,19 +25,10 @@ export const getSavedArticlesService = async (userId) => {
   return user.savedArticles;
 };
 
-/**
- * Отримати створені користувачем статті
- * @param {string} userId
- */
 export const getCreatedArticlesService = async (userId) => {
   return await ArticlesCollection.find({ ownerId: userId });
 };
 
-/**
- * Зберегти статтю до списку користувача
- * @param {string} userId
- * @param {string} articleId
- */
 export const saveArticleService = async (userId, articleId) => {
   const article = await ArticlesCollection.findById(articleId);
   if (!article) {
@@ -66,11 +47,6 @@ export const saveArticleService = async (userId, articleId) => {
   return user.savedArticles;
 };
 
-/**
- * Видалити збережену статтю зі списку користувача
- * @param {string} userId
- * @param {string} articleId
- */
 export const removeSavedArticleService = async (userId, articleId) => {
   const user = await UserCollection.findById(userId);
   const index = user.savedArticles.indexOf(articleId);
@@ -83,4 +59,31 @@ export const removeSavedArticleService = async (userId, articleId) => {
   await user.save();
 
   return user.savedArticles;
+};
+
+export const updateUserPhotoService = async (userId, file) => {
+  const user = await UserCollection.findById(userId);
+  if (!user) throw createError(404, 'User not found');
+
+  const avatarURL = await saveFileToCloudinary(file);
+  user.avatar = avatarURL;
+  await user.save();
+  return user;
+};
+
+export const updateUserInfoService = async (userId, info) => {
+  const user = await UserCollection.findById(userId);
+  if (!user) throw createError(404, 'User not found');
+
+  if (info.name) user.name = info.name;
+  if (info.email) user.email = info.email;
+
+  await user.save();
+  return user;
+};
+
+export const currentUserService = async (userId) => {
+  const user = await UserCollection.findById(userId).select('-password');
+  if (!user) throw createError(404, 'User not found');
+  return user;
 };

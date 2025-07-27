@@ -1,0 +1,30 @@
+deleteArticle:
+  tags: [Articles]
+  summary: Delete an article by ID
+  operationId: deleteArticle
+  description: |
+    Deletes an article from the database using its unique identifier (`articleId`).
+
+    Requires authentication (`Bearer` token).
+
+    ### Notes:
+    - If the article does not exist, a 404 error is returned.
+    - Returns `204 No Content` on successful deletion — no body in the response.
+    - The user must be authenticated, but no role or ownership checks are applied unless added in middleware.
+
+  parameters:
+    - name: articleId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the article to delete
+  security:
+    - bearerAuth: []
+  responses:
+    '204':
+      description: Article deleted successfully (No Content)
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      description: Article not found

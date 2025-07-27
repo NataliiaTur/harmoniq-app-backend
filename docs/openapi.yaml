@@ -16,16 +16,34 @@ servers:
 tags:
   - name: Auth
     description: Auth operations.
+  - name: Articles
+    description: Operations related to articles.
 
 paths:
   /auth/register:
-    $ref: 'swagger/paths/auth/register.yaml#/authRegister'
+    post:
+      $ref: 'swagger/paths/auth/register.yaml#/authRegister'
   /auth/login:
-    $ref: 'swagger/paths/auth/login.yaml#/authLogin'
+    post:
+      $ref: 'swagger/paths/auth/login.yaml#/authLogin'
   /auth/logout:
-    $ref: 'swagger/paths/auth/logout.yaml#/authLogout'
+    post:
+      $ref: 'swagger/paths/auth/logout.yaml#/authLogout'
   /auth/refresh:
-    $ref: 'swagger/paths/auth/refresh.yaml#/authRefresh'
+    post:
+      $ref: 'swagger/paths/auth/refresh.yaml#/authRefresh'
+  /articles:
+    get:
+      $ref: 'swagger/paths/articles/getAll.yaml#/getArticles'
+    post:
+      $ref: 'swagger/paths/articles/create.yaml#/createArticle'
+  /articles/{articleId}:
+    get:
+      $ref: 'swagger/paths/articles/getById.yaml#/getArticleById'
+    patch:
+      $ref: 'swagger/paths/articles/patchById.yaml#/patchArticle'
+    delete:
+      $ref: 'swagger/paths/articles/deleteById.yaml#/deleteArticle'
 
 components:
   schemas:

@@ -1,0 +1,25 @@
+PatchArticle:
+  type: object
+  properties:
+    title:
+      type: string
+      example: 'Updated Article Title'
+      minLength: 3
+      maxLength: 48
+    article:
+      type: string
+      example: 'Updated article content (at least 100 characters)...'
+      minLength: 100
+      maxLength: 4000
+    img:
+      type: string
+      format: binary
+    date:
+      type: string
+      format: date
+      example: '2025-07-27'
+    author:
+      type: string
+      example: 'Updated Author Name'
+      minLength: 4
+      maxLength: 50

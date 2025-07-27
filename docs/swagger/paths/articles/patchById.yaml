@@ -1,0 +1,60 @@
+patchArticle:
+  tags: [Articles]
+  summary: Update an existing article by ID
+  operationId: patchArticle
+  description: |
+    Allows updating an existing article's fields by its unique identifier (`articleId`).
+
+    Requires authentication (`Bearer` token).
+
+    Accepts partial updates of:
+    - **title**
+    - **article**
+    - **img** (optional new image upload)
+    - **date**
+    - **author**
+
+    If an image is provided, it replaces the existing one.
+
+    ### Notes:
+    - Only fields provided in the request will be updated.
+    - If article ID is invalid or not found, returns 404.
+    - If image is uploaded, it must be max 1MB.
+
+  parameters:
+    - name: articleId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the article to update
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: '../../components/schemas/articles/PatchArticle.yaml#/PatchArticle'
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Article updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Successfully patched an article
+              data:
+                $ref: '../../components/schemas/articles/Article.yaml#/Article'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      description: Article not found
+    '400':
+      description: Invalid input data

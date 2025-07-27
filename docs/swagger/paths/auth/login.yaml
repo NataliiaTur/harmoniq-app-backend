@@ -1,31 +1,30 @@
 authLogin:
-  post:
-    tags: [Auth]
-    operationId: authLogin
-    security: []
-    summary: Endpoint for user login using email and password
-    description: |
-      Authenticates a registered user and returns access and refresh tokens.
+  tags: [Auth]
+  operationId: authLogin
+  security: []
+  summary: Endpoint for user login using email and password
+  description: |
+    Authenticates a registered user and returns access and refresh tokens.
 
-      - **Email**: required, max — 64 characters
-      - **Password**: required, min — 8 characters, max — 64 characters
-      - Returns a **JWT access token** for authorized requests
-      - Returns a **refresh token** for obtaining new access tokens when expired
+    - **Email**: required, max — 64 characters
+    - **Password**: required, min — 8 characters, max — 64 characters
+    - Returns a **JWT access token** for authorized requests
+    - Returns a **refresh token** for obtaining new access tokens when expired
 
-      ⚠️ Both tokens must be securely stored on the client side.
-      ⚠️ Access token should be sent in the `Authorization` header as a Bearer token.
-    requestBody:
-      required: true
+    ⚠️ Both tokens must be securely stored on the client side.
+    ⚠️ Access token should be sent in the `Authorization` header as a Bearer token.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/UserLogin.yaml#/UserLogin'
+  responses:
+    '200':
+      description: Login successful
       content:
         application/json:
           schema:
-            $ref: '../../components/schemas/auth/UserLogin.yaml#/UserLogin'
-    responses:
-      '200':
-        description: Login successful
-        content:
-          application/json:
-            schema:
-              $ref: '../../components/schemas/auth/LoginResponse.yaml#/LoginResponse'
-      '401':
-        $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+            $ref: '../../components/schemas/auth/LoginResponse.yaml#/LoginResponse'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'

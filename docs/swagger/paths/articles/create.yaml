@@ -1,0 +1,46 @@
+createArticle:
+  tags: [Articles]
+  summary: Create a new article
+  operationId: createArticle
+  description: |
+    Creates a new article and saves it to the database.
+
+    Requires authentication (`Bearer` token).
+
+    Accepts multipart form-data including a photo and textual content.
+
+    ### Field Requirements:
+    - **title**: required, 3–48 characters
+    - **article**: required, 100–4000 characters
+    - **img**: required, image file (max size 1MB)
+    - **date**: required, string in 'YYYY-MM-DD' format
+    - **author**: required, 4–50 characters
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: '../../components/schemas/articles/CreateArticle.yaml#/CreateArticle'
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      description: Article successfully created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 201
+              message:
+                type: string
+                example: Successfully created article
+              data:
+                $ref: '../../components/schemas/articles/Article.yaml#/Article'
+    '400':
+      $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'

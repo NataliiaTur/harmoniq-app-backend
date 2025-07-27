@@ -23,6 +23,10 @@
     {
       "name": "Auth",
       "description": "Auth operations."
+    },
+    {
+      "name": "Articles",
+      "description": "Operations related to articles."
     }
   ],
   "paths": {
@@ -181,6 +185,259 @@
           }
         }
       }
+    },
+    "/articles": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Get a list of all articles",
+        "operationId": "getArticles",
+        "security": [],
+        "description": "Returns a list of all available articles from the database.\n\nEach article contains the following:\n- **img** (optional): URL to the article's image.\n- **title** (required): Title of the article.\n- **article** (required): Full content of the article.\n- **ownerId** (required): The ID of the user who created the article.\n- **rate** (optional): A numeric rating value (default is 0).\n- **createdAt** / **updatedAt**: Timestamps for article creation and last update.\n\nThis endpoint does not require authentication.\n\n### Use case:\nCan be used to:\n- Display all articles to end users on the frontend\n- Feed content into a news/blog UI component\n- Enable further filtering or searching by client-side logic\n",
+        "responses": {
+          "200": {
+            "description": "A list of articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found articles!"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Create a new article",
+        "operationId": "createArticle",
+        "description": "Creates a new article and saves it to the database.\n\nRequires authentication (`Bearer` token).\n\nAccepts multipart form-data including a photo and textual content.\n\n### Field Requirements:\n- **title**: required, 3–48 characters\n- **article**: required, 100–4000 characters\n- **img**: required, image file (max size 1MB)\n- **date**: required, string in 'YYYY-MM-DD' format\n- **author**: required, 4–50 characters\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticle"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Article successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully created article"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Get article by ID",
+        "operationId": "getArticleById",
+        "security": [],
+        "description": "Retrieves a single article by its unique MongoDB `_id`.\n\n### Behavior:\n- If a valid `articleId` is provided and the article exists, returns the article data.\n- If the article does not exist, returns a 404 error.\n- If the provided ID is not a valid MongoDB ObjectId, returns a 400 error (handled by middleware).\n\n### Returned fields:\n- **_id**: Unique identifier of the article.\n- **img**: Optional URL of the article's image.\n- **title**: Title of the article.\n- **article**: Full text content.\n- **ownerId**: ID of the user who created the article.\n- **rate**: Numeric rating (default 0).\n- **createdAt**, **updatedAt**: Timestamps.\n",
+        "parameters": [
+          {
+            "name": "articleId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the article to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "64a1cbe2f4891c001e57a1f5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found article with id 64a1cbe2f4891c001e57a1f5!"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid article ID format"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Update an existing article by ID",
+        "operationId": "patchArticle",
+        "description": "Allows updating an existing article's fields by its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\nAccepts partial updates of:\n- **title**\n- **article**\n- **img** (optional new image upload)\n- **date**\n- **author**\n\nIf an image is provided, it replaces the existing one.\n\n### Notes:\n- Only fields provided in the request will be updated.\n- If article ID is invalid or not found, returns 404.\n- If image is uploaded, it must be max 1MB.\n",
+        "parameters": [
+          {
+            "name": "articleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the article to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchArticle"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully patched an article"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Article"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Delete an article by ID",
+        "operationId": "deleteArticle",
+        "description": "Deletes an article from the database using its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\n### Notes:\n- If the article does not exist, a 404 error is returned.\n- Returns `204 No Content` on successful deletion — no body in the response.\n- The user must be authenticated, but no role or ownership checks are applied unless added in middleware.\n",
+        "parameters": [
+          {
+            "name": "articleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the article to delete"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Article deleted successfully (No Content)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Article not found"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -284,6 +541,116 @@
                 "example": "https://res.cloudinary.com/demo/image/upload/sample.jpg"
               }
             }
+          }
+        }
+      },
+      "Article": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "64a1cbe2f4891c001e57a1f5"
+          },
+          "img": {
+            "type": "string",
+            "example": "https://example.com/image.jpg"
+          },
+          "title": {
+            "type": "string",
+            "example": "The Benefits of Music Therapy"
+          },
+          "article": {
+            "type": "string",
+            "example": "Music therapy has shown benefits in reducing anxiety and improving mood."
+          },
+          "ownerId": {
+            "type": "string",
+            "example": "64a1cbe2f4891c001e57a1d1"
+          },
+          "rate": {
+            "type": "number",
+            "example": 4.5
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-07-25T12:34:56.789Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-07-26T08:15:00.123Z"
+          }
+        }
+      },
+      "CreateArticle": {
+        "type": "object",
+        "required": [
+          "title",
+          "article",
+          "img",
+          "date",
+          "author"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "How Music Improves Mental Health",
+            "minLength": 3,
+            "maxLength": 48
+          },
+          "article": {
+            "type": "string",
+            "example": "This article explores how music therapy can reduce anxiety and boost emotional health.",
+            "minLength": 100,
+            "maxLength": 4000
+          },
+          "img": {
+            "type": "string",
+            "format": "binary"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-07-27"
+          },
+          "author": {
+            "type": "string",
+            "example": "Jane Doe",
+            "minLength": 4,
+            "maxLength": 50
+          }
+        }
+      },
+      "PatchArticle": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Updated Article Title",
+            "minLength": 3,
+            "maxLength": 48
+          },
+          "article": {
+            "type": "string",
+            "example": "Updated article content (at least 100 characters)...",
+            "minLength": 100,
+            "maxLength": 4000
+          },
+          "img": {
+            "type": "string",
+            "format": "binary"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2025-07-27"
+          },
+          "author": {
+            "type": "string",
+            "example": "Updated Author Name",
+            "minLength": 4,
+            "maxLength": 50
           }
         }
       }

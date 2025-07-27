@@ -1,0 +1,29 @@
+Article:
+  type: object
+  properties:
+    _id:
+      type: string
+      example: '64a1cbe2f4891c001e57a1f5'
+    img:
+      type: string
+      example: 'https://example.com/image.jpg'
+    title:
+      type: string
+      example: 'The Benefits of Music Therapy'
+    article:
+      type: string
+      example: 'Music therapy has shown benefits in reducing anxiety and improving mood.'
+    ownerId:
+      type: string
+      example: '64a1cbe2f4891c001e57a1d1'
+    rate:
+      type: number
+      example: 4.5
+    createdAt:
+      type: string
+      format: date-time
+      example: '2023-07-25T12:34:56.789Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2023-07-26T08:15:00.123Z'

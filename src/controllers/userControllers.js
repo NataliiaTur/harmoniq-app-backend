@@ -8,6 +8,11 @@ import {
   removeSavedArticleService,
 } from '../services/users.js';
 
+import { ArticlesCollection } from '../db/models/article.js';
+import { UserCollection } from '../db/models/user.js';
+import fs from 'fs/promises';
+import cloudinary from '../services/cloudinary.js';
+
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();
   res.json({
@@ -84,3 +89,51 @@ export const removeSavedArticle = asyncHandler(async (req, res) => {
     data: updated,
   });
 });
+
+export const uploadUserPhoto = async (req, res) => {
+  const { path: tempPath } = req.file;
+  const userId = req.user.id;
+
+  try {
+    const cloudResult = await cloudinary.uploader.upload(tempPath, {
+      folder: 'avatars',
+      public_id: `user_${userId}_${Date.now()}`,
+    });
+
+    const updatedUser = await UserCollection.findByIdAndUpdate(
+      userId,
+      { avatar: cloudResult.secure_url },
+      { new: true },
+    );
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Photo uploaded successfully',
+      data: { avatar: updatedUser.avatar },
+    });
+  } catch {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to upload photo',
+    });
+  } finally {
+    await fs.unlink(tempPath);
+  }
+};
+
+export const getCurrentUserController = async (req, res) => {
+  const user = req.user;
+
+  res.json({
+    status: 200,
+    message: 'Current user fetched successfully',
+    data: {
+      user,
+    },
+  });
+};
+
+export const testArticlesOwners = async () => {
+  const articles = await ArticlesCollection.find().limit(5);
+  console.log(articles.map((a) => ({ id: a._id, ownerId: a.ownerId })));
+};

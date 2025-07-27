@@ -6,12 +6,12 @@ import {
   getCreatedArticlesService,
   saveArticleService,
   removeSavedArticleService,
+  updateUserInfoService,
+  currentUserService,
 } from '../services/users.js';
 
-import { ArticlesCollection } from '../db/models/article.js';
 import { UserCollection } from '../db/models/user.js';
-import fs from 'fs/promises';
-import cloudinary from '../services/cloudinary.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();
@@ -22,10 +22,6 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /api/users/:id
- * Отримати користувача по ID
- */
 export const getUserById = asyncHandler(async (req, res) => {
   const user = await getUserByIdService(req.params.id);
   res.json({
@@ -35,10 +31,6 @@ export const getUserById = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /api/users/saved
- * Отримати збережені статті авторизованого користувача
- */
 export const getSavedArticles = asyncHandler(async (req, res) => {
   const saved = await getSavedArticlesService(req.user.id);
   res.json({
@@ -48,10 +40,6 @@ export const getSavedArticles = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /api/users/created
- * Отримати створені статті авторизованого користувача
- */
 export const getCreatedArticles = asyncHandler(async (req, res) => {
   const created = await getCreatedArticlesService(req.user.id);
   res.json({
@@ -61,10 +49,6 @@ export const getCreatedArticles = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * POST /api/users/save/:articleId
- * Зберегти статтю користувачем
- */
 export const saveArticle = asyncHandler(async (req, res) => {
   const saved = await saveArticleService(req.user.id, req.params.articleId);
   res.json({
@@ -74,10 +58,6 @@ export const saveArticle = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * DELETE /api/users/remove/:articleId
- * Видалити статтю зі збережених
- */
 export const removeSavedArticle = asyncHandler(async (req, res) => {
   const updated = await removeSavedArticleService(
     req.user.id,
@@ -90,39 +70,27 @@ export const removeSavedArticle = asyncHandler(async (req, res) => {
   });
 });
 
-export const uploadUserPhoto = async (req, res) => {
-  const { path: tempPath } = req.file;
-  const userId = req.user.id;
+export const updatedUserAvatar = async (req, res) => {
+  const avatar = req.file;
+  let avatarURL = '';
 
-  try {
-    const cloudResult = await cloudinary.uploader.upload(tempPath, {
-      folder: 'avatars',
-      public_id: `user_${userId}_${Date.now()}`,
-    });
-
-    const updatedUser = await UserCollection.findByIdAndUpdate(
-      userId,
-      { avatar: cloudResult.secure_url },
-      { new: true },
-    );
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Photo uploaded successfully',
-      data: { avatar: updatedUser.avatar },
-    });
-  } catch {
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to upload photo',
-    });
-  } finally {
-    await fs.unlink(tempPath);
+  if (avatar) {
+    avatarURL = await saveFileToCloudinary(avatar);
   }
+  const newUser = await UserCollection.findByIdAndUpdate(
+    req.user.id,
+    { avatar: avatarURL },
+    { new: true },
+  );
+  res.json({
+    status: 'success',
+    message: 'User updated successfully',
+    data: newUser,
+  });
 };
 
 export const getCurrentUserController = async (req, res) => {
-  const user = req.user;
+  const user = await currentUserService(req.user.id);
 
   res.json({
     status: 200,
@@ -133,7 +101,12 @@ export const getCurrentUserController = async (req, res) => {
   });
 };
 
-export const testArticlesOwners = async () => {
-  const articles = await ArticlesCollection.find().limit(5);
-  console.log(articles.map((a) => ({ id: a._id, ownerId: a.ownerId })));
+export const updateUserInfo = async (req, res) => {
+  const info = req.body;
+  const newUser = await updateUserInfoService(req.user.id, info);
+  res.json({
+    status: 'success',
+    message: 'User updated successfully',
+    data: newUser,
+  });
 };

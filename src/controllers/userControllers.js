@@ -11,7 +11,7 @@ import {
 import { ArticlesCollection } from '../db/models/article.js';
 import { UserCollection } from '../db/models/user.js';
 import fs from 'fs/promises';
-import { cloudinary } from '../services/cloudinary.js';
+import cloudinary from '../services/cloudinary.js';
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();

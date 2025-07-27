@@ -1,31 +1,30 @@
 authRefresh:
-  post:
-    tags: [Auth]
-    operationId: authRefresh
-    security:
-      - bearerAuth: []
-    summary: Endpoint for refreshing authentication tokens
-    description: |
-      Returns a new pair of access and refresh tokens if the provided refresh token is valid.
+  tags: [Auth]
+  operationId: authRefresh
+  security:
+    - bearerAuth: []
+  summary: Endpoint for refreshing authentication tokens
+  description: |
+    Returns a new pair of access and refresh tokens if the provided refresh token is valid.
 
-      - Requires a **valid refresh token** in the request body
-      - Responds with new **accessToken** and **refreshToken**
-      - Used to maintain an active session without requiring re-login
-    requestBody:
-      required: true
+    - Requires a **valid refresh token** in the request body
+    - Responds with new **accessToken** and **refreshToken**
+    - Used to maintain an active session without requiring re-login
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            refreshToken:
+              type: string
+  responses:
+    '200':
+      description: Tokens refreshed
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              refreshToken:
-                type: string
-    responses:
-      '200':
-        description: Tokens refreshed
-        content:
-          application/json:
-            schema:
-              $ref: '../../components/schemas/auth/TokenResponse.yaml#/TokenResponse'
-      '403':
-        $ref: '../../components/responses/auth/Forbidden.yaml#/Forbidden'
+            $ref: '../../components/schemas/auth/TokenResponse.yaml#/TokenResponse'
+    '403':
+      $ref: '../../components/responses/auth/Forbidden.yaml#/Forbidden'

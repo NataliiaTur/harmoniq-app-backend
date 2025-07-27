@@ -1,0 +1,50 @@
+getArticleById:
+  tags: [Articles]
+  summary: Get article by ID
+  operationId: getArticleById
+  security: []
+  description: |
+    Retrieves a single article by its unique MongoDB `_id`.
+
+    ### Behavior:
+    - If a valid `articleId` is provided and the article exists, returns the article data.
+    - If the article does not exist, returns a 404 error.
+    - If the provided ID is not a valid MongoDB ObjectId, returns a 400 error (handled by middleware).
+
+    ### Returned fields:
+    - **_id**: Unique identifier of the article.
+    - **img**: Optional URL of the article's image.
+    - **title**: Title of the article.
+    - **article**: Full text content.
+    - **ownerId**: ID of the user who created the article.
+    - **rate**: Numeric rating (default 0).
+    - **createdAt**, **updatedAt**: Timestamps.
+
+  parameters:
+    - name: articleId
+      in: path
+      required: true
+      description: The ID of the article to retrieve
+      schema:
+        type: string
+        example: 64a1cbe2f4891c001e57a1f5
+
+  responses:
+    '200':
+      description: Article found successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Successfully found article with id 64a1cbe2f4891c001e57a1f5!
+              data:
+                $ref: '../../components/schemas/articles/Article.yaml#/Article'
+
+    '400':
+      description: Invalid article ID format

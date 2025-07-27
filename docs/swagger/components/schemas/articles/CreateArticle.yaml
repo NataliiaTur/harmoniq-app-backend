@@ -1,0 +1,31 @@
+CreateArticle:
+  type: object
+  required:
+    - title
+    - article
+    - img
+    - date
+    - author
+  properties:
+    title:
+      type: string
+      example: 'How Music Improves Mental Health'
+      minLength: 3
+      maxLength: 48
+    article:
+      type: string
+      example: 'This article explores how music therapy can reduce anxiety and boost emotional health.'
+      minLength: 100
+      maxLength: 4000
+    img:
+      type: string
+      format: binary
+    date:
+      type: string
+      format: date
+      example: '2025-07-27'
+    author:
+      type: string
+      example: 'Jane Doe'
+      minLength: 4
+      maxLength: 50

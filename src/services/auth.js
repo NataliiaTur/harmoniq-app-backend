@@ -7,6 +7,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from '../utils/token.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
@@ -17,7 +18,7 @@ export const findUserByEmail = async (email) => {
 };
 
 //registration
-export const registerUser = async ({ name, email, password }) => {
+export const registerUser = async ({ name, email, password }, avatarFile) => {
   const { error } = registerUserSchema.validate({ name, email, password });
   if (error) {
     throw createHttpError(400, error.details[0].message);
@@ -30,10 +31,16 @@ export const registerUser = async ({ name, email, password }) => {
 
   const hashedPassword = await hashPassword(password);
 
+  let avatarURL = '';
+  if (avatarFile) {
+    avatarURL = await saveFileToCloudinary(avatarFile);
+  }
+
   const newUser = await UserCollection.create({
     name,
     email,
     password: hashedPassword,
+    avatar: avatarURL,
   });
 
   return newUser;

@@ -13,11 +13,13 @@ import {
   refreshTokenSchema,
 } from '../validation/authValidation.js';
 import { authenticate } from '../middlewares/authenticate.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = express.Router();
 
 router.post(
   '/register',
+  upload.single('avatar'),
   validateBody(registerUserSchema),
   ctrlWrapper(registerUserController),
 );

@@ -20,6 +20,10 @@ export const registerUserSchema = Joi.object({
     'string.max': 'Password must be at most 64 characters',
     'any.required': 'Password is required',
   }),
+  avatar: Joi.any()
+    .optional()
+    .meta({ swaggerType: 'file' })
+    .description('User avatar image'),
 });
 
 export const loginUserSchema = Joi.object({

@@ -236,7 +236,7 @@
         ],
         "summary": "Create a new article",
         "operationId": "createArticle",
-        "description": "Creates a new article and saves it to the database.\n\nRequires authentication (`Bearer` token).\n\nAccepts multipart form-data including a photo and textual content.\n\n### Field Requirements:\n- **title**: required, 3–48 characters\n- **article**: required, 100–4000 characters\n- **img**: required, image file (max size 1MB)\n- **date**: required, string in 'YYYY-MM-DD' format\n- **author**: required, 4–50 characters\n",
+        "description": "Creates a new article and saves it to the database.\n\nRequires authentication (`Bearer` token).\n\nAccepts multipart form-data including a photo and textual content.\n\n### Field Requirements:\n- **title**: required, 3–48 characters\n- **article**: required, 100–4000 characters\n- **img**: required, image file (max size 1MB)\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -341,7 +341,7 @@
         ],
         "summary": "Update an existing article by ID",
         "operationId": "patchArticle",
-        "description": "Allows updating an existing article's fields by its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\nAccepts partial updates of:\n- **title**\n- **article**\n- **img** (optional new image upload)\n- **date**\n- **author**\n\nIf an image is provided, it replaces the existing one.\n\n### Notes:\n- Only fields provided in the request will be updated.\n- If article ID is invalid or not found, returns 404.\n- If image is uploaded, it must be max 1MB.\n",
+        "description": "Allows updating an existing article's fields by its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\nAccepts partial updates of:\n- **title**\n- **article**\n- **img** (optional new image upload)\n- **author**\n\nIf an image is provided, it replaces the existing one.\n\n### Notes:\n- Only fields provided in the request will be updated.\n- If article ID is invalid or not found, returns 404.\n- If image is uploaded, it must be max 1MB.\n",
         "parameters": [
           {
             "name": "articleId",
@@ -588,9 +588,7 @@
         "required": [
           "title",
           "article",
-          "img",
-          "date",
-          "author"
+          "img"
         ],
         "properties": {
           "title": {
@@ -608,17 +606,6 @@
           "img": {
             "type": "string",
             "format": "binary"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "example": "2025-07-27"
-          },
-          "author": {
-            "type": "string",
-            "example": "Jane Doe",
-            "minLength": 4,
-            "maxLength": 50
           }
         }
       },
@@ -640,11 +627,6 @@
           "img": {
             "type": "string",
             "format": "binary"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "example": "2025-07-27"
           },
           "author": {
             "type": "string",

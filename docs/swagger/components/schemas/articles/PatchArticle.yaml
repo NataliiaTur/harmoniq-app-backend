@@ -14,10 +14,6 @@ PatchArticle:
     img:
       type: string
       format: binary
-    date:
-      type: string
-      format: date
-      example: '2025-07-27'
     author:
       type: string
       example: 'Updated Author Name'

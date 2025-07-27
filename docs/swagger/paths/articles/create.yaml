@@ -13,8 +13,6 @@ createArticle:
     - **title**: required, 3–48 characters
     - **article**: required, 100–4000 characters
     - **img**: required, image file (max size 1MB)
-    - **date**: required, string in 'YYYY-MM-DD' format
-    - **author**: required, 4–50 characters
 
   requestBody:
     required: true

@@ -1,0 +1,42 @@
+getCurrentUser:
+  tags: [Users]
+  summary: Get the currently authenticated user
+  operationId: getCurrentUser
+  description: |
+    Returns information about the currently authenticated user.
+
+    Requires a valid Bearer token to identify the user.
+
+    The password is excluded from the response. If the user is not found (e.g., deleted while token is still valid), a 404 is returned.
+
+    ### Use cases:
+    - Display user profile info on account page
+    - Initialize authenticated session data on frontend
+
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Current user profile
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Current user fetched successfully
+              data:
+                type: object
+                properties:
+                  user:
+                    $ref: '../../components/schemas/users/User.yaml#/User'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      description: User not found
+    '500':
+      description: Internal server error

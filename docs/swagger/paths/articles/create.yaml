@@ -42,3 +42,5 @@ createArticle:
       $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
     '401':
       $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '500':
+      description: Internal server error

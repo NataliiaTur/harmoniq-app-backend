@@ -1,0 +1,28 @@
+User:
+  type: object
+  properties:
+    _id:
+      type: string
+      example: '64a1cbe2f4891c001e57a1d1'
+    name:
+      type: string
+      example: 'Jane Doe'
+    email:
+      type: string
+      example: 'jane@example.com'
+    avatar:
+      type: string
+      example: 'https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg'
+    savedArticles:
+      type: array
+      items:
+        type: string
+        example: '64a1cbe2f4891c001e57a1f5'
+    createdAt:
+      type: string
+      format: date-time
+      example: '2025-01-01T12:00:00Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2025-07-01T12:00:00Z'

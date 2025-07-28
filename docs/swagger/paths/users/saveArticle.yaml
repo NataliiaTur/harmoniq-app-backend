@@ -1,0 +1,54 @@
+saveArticle:
+  tags: [Users]
+  summary: Save an article to the user's saved list
+  operationId: saveArticle
+  description: |
+    Saves an article to the authenticated user's saved list.
+
+    Requires a valid Bearer token.
+
+    ### Behavior:
+    - If the article does not exist, returns 404.
+    - If the article is already saved, returns 409 Conflict.
+    - On success, returns the updated list of saved article IDs.
+
+    ### Use cases:
+    - Allow users to bookmark or collect articles
+    - Enable frontend to indicate saved state per article
+
+  parameters:
+    - name: articleId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: ID of the article to be saved
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Article saved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Article saved successfully
+              data:
+                type: array
+                items:
+                  type: string
+                  example: '64a1cbe2f4891c001e57a1f5'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      description: Article not found
+    '409':
+      description: Article already saved
+    '500':
+      description: Internal server error

@@ -1,0 +1,36 @@
+getAllUsers:
+  tags: [Users]
+  summary: Get a list of all article authors
+  operationId: getAllUsers
+  description: |
+    Returns a list of users who have authored at least one article on the site.
+
+      Each user object may include public fields such as name, avatar etc.
+
+      ### Use cases:
+      - Display list of authors on a blog or article index page
+      - Show author info in filters or navigation
+
+  security: []
+  responses:
+    '200':
+      description: List of all users
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Users fetched successfully
+              data:
+                type: array
+                items:
+                  $ref: '../../components/schemas/users/User.yaml#/User'
+    '400':
+      $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
+    '500':
+      description: Internal server error

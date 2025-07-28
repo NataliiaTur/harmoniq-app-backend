@@ -23,3 +23,5 @@ authLogout:
                 example: Logout successful
     '401':
       $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '500':
+      description: Internal server error

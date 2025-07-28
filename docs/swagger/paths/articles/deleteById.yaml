@@ -28,3 +28,5 @@ deleteArticle:
       $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
     '404':
       description: Article not found
+    '500':
+      description: Internal server error

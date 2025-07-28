@@ -1,0 +1,50 @@
+removeSavedArticle:
+  tags: [Users]
+  summary: Remove an article from the user's saved list
+  operationId: removeSavedArticle
+  description: |
+    Removes an article from the authenticated user's saved articles list.
+
+    Requires a valid Bearer token.
+
+    ### Behavior:
+    - If the article is not in the user's saved list, returns 404.
+    - On success, returns the updated saved articles list.
+
+    ### Use cases:
+    - Allow users to un-save or remove bookmarked articles
+
+  parameters:
+    - name: articleId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: ID of the article to be removed from saved list
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Article removed from saved list
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Article removed from saved list
+              data:
+                type: array
+                items:
+                  type: string
+                  example: '64a1cbe2f4891c001e57a1f5'
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      description: Article not found in saved list
+    '500':
+      description: Internal server error

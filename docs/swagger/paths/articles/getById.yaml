@@ -45,6 +45,7 @@ getArticleById:
                 example: Successfully found article with id 64a1cbe2f4891c001e57a1f5!
               data:
                 $ref: '../../components/schemas/articles/Article.yaml#/Article'
-
     '400':
       description: Invalid article ID format
+    '500':
+      description: Internal server error

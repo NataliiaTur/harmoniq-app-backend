@@ -1,0 +1,13 @@
+Invalid:
+  description: Invalid file format or missing file
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          status:
+            type: integer
+            example: 400
+          message:
+            type: string
+            example: No file provided or invalid format

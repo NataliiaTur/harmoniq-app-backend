@@ -12,7 +12,13 @@ cloudinary.v2.config({
 });
 
 export const saveFileToCloudinary = async (file) => {
-  const response = await cloudinary.v2.uploader.upload(file.path);
+  if (!file || !file.path) {
+    throw new Error('File path is missing');
+  }
+  const { secure_url } = await cloudinary.v2.uploader.upload(file.path, {
+    folder: 'uploads',
+    transformation: [{ width: 800, height: 800, crop: 'limit' }],
+  });
   await fs.unlink(file.path);
-  return response.secure_url;
+  return secure_url;
 };

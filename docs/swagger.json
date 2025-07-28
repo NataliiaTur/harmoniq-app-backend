@@ -27,6 +27,10 @@
     {
       "name": "Articles",
       "description": "Operations related to articles."
+    },
+    {
+      "name": "Users",
+      "description": "User-related operations."
     }
   ],
   "paths": {
@@ -65,6 +69,9 @@
           },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -101,6 +108,9 @@
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -137,6 +147,9 @@
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -182,6 +195,9 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -281,6 +297,9 @@
           },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -332,6 +351,9 @@
           },
           "400": {
             "description": "Invalid article ID format"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
@@ -341,7 +363,7 @@
         ],
         "summary": "Update an existing article by ID",
         "operationId": "patchArticle",
-        "description": "Allows updating an existing article's fields by its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\nAccepts partial updates of:\n- **title**\n- **article**\n- **img** (optional new image upload)\n- **author**\n\nIf an image is provided, it replaces the existing one.\n\n### Notes:\n- Only fields provided in the request will be updated.\n- If article ID is invalid or not found, returns 404.\n- If image is uploaded, it must be max 1MB.\n",
+        "description": "Allows updating an existing article's fields by its unique identifier (`articleId`).\n\nRequires authentication (`Bearer` token).\n\nAccepts partial updates of:\n- **title**\n- **article**\n- **img** (optional new image upload)\n\nIf an image is provided, it replaces the existing one.\n\n### Notes:\n- Only fields provided in the request will be updated.\n- If article ID is invalid or not found, returns 404.\n- If image is uploaded, it must be max 1MB.\n",
         "parameters": [
           {
             "name": "articleId",
@@ -400,6 +422,9 @@
           },
           "404": {
             "description": "Article not found"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       },
@@ -435,6 +460,537 @@
           },
           "404": {
             "description": "Article not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/saved-articles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get saved articles for the authenticated user",
+        "operationId": "getSavedArticles",
+        "description": "Returns a list of articles saved by the currently authenticated user.\n\nRequires a valid Bearer token to identify the user.\n\nThe saved articles are fetched by populating the `savedArticles` field in the user document.\n\n### Use cases:\n- Display user's saved articles on their dashboard\n- Allow users to manage saved reading content\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of saved articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Saved articles fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/created-articles": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get articles created by the authenticated user",
+        "operationId": "getCreatedArticles",
+        "description": "Returns a list of articles authored (created) by the currently authenticated user.\n\nRequires a valid Bearer token to identify the user.\n\nThis endpoint filters articles in the database by `ownerId` field, matching the authenticated user's ID.\n\n### Use cases:\n- Show a user their authored content\n- Allow user to manage/edit their own posts\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of created articles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Created articles fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get the currently authenticated user",
+        "operationId": "getCurrentUser",
+        "description": "Returns information about the currently authenticated user.\n\nRequires a valid Bearer token to identify the user.\n\nThe password is excluded from the response. If the user is not found (e.g., deleted while token is still valid), a 404 is returned.\n\n### Use cases:\n- Display user profile info on account page\n- Initialize authenticated session data on frontend\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Current user fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/save/{articleId}": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Save an article to the user's saved list",
+        "operationId": "saveArticle",
+        "description": "Saves an article to the authenticated user's saved list.\n\nRequires a valid Bearer token.\n\n### Behavior:\n- If the article does not exist, returns 404.\n- If the article is already saved, returns 409 Conflict.\n- On success, returns the updated list of saved article IDs.\n\n### Use cases:\n- Allow users to bookmark or collect articles\n- Enable frontend to indicate saved state per article\n",
+        "parameters": [
+          {
+            "name": "articleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the article to be saved"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article saved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Article saved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "64a1cbe2f4891c001e57a1f5"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Article not found"
+          },
+          "409": {
+            "description": "Article already saved"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Remove an article from the user's saved list",
+        "operationId": "removeSavedArticle",
+        "description": "Removes an article from the authenticated user's saved articles list.\n\nRequires a valid Bearer token.\n\n### Behavior:\n- If the article is not in the user's saved list, returns 404.\n- On success, returns the updated saved articles list.\n\n### Use cases:\n- Allow users to un-save or remove bookmarked articles\n",
+        "parameters": [
+          {
+            "name": "articleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the article to be removed from saved list"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article removed from saved list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Article removed from saved list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "64a1cbe2f4891c001e57a1f5"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "description": "Article not found in saved list"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a list of all article authors",
+        "operationId": "getAllUsers",
+        "description": "Returns a list of users who have authored at least one article on the site.\n\n  Each user object may include public fields such as name, avatar etc.\n\n  ### Use cases:\n  - Display list of authors on a blog or article index page\n  - Show author info in filters or navigation\n",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Users fetched successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get user by ID",
+        "operationId": "getUserById",
+        "description": "Retrieves public information of a specific user by their unique identifier.\n\n  This endpoint is typically used to:\n  - Display the author’s profile on an article page\n  - Fetch data to populate user profile modals or pages\n  - View a contributor’s details (e.g., in admin dashboards)\n\n  ### Behavior:\n  - Only returns non-sensitive fields (e.g., name, avatar, email)\n  - Returns a 404 error if the user does not exist\n  - The `id` parameter must be a valid MongoDB ObjectId\n\n  ### Example use cases:\n  - **/users/64b7dbf2eac4a914b7d6e217** → returns user details for that ID\n  - When viewing an article written by a specific user\n\n  > ⚠️ This endpoint does not require authentication, but only public data will be returned.\n",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "MongoDB ObjectId of the user",
+            "schema": {
+              "type": "string",
+              "example": "64b7dbf2eac4a914b7d6e217"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "User profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User fetched successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/avatar": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user's avatar",
+        "operationId": "updateUserAvatar",
+        "description": "Updates the authenticated user's avatar image.\n\nThis endpoint allows a user to upload a new avatar image. The image is uploaded to a cloud storage service, and the resulting URL is stored in the user's profile.\n\n### Requirements:\n- **Authentication**: Required via Bearer Token\n- **File format**: Must be an image (e.g., `.jpg`, `.png`)\n- **Max file size**: 1MB (enforced at middleware or storage level)\n- The previous avatar (if any) is replaced by the new one\n\n### Behavior:\n- If no file is provided, avatar will remain unchanged\n- Responds with the updated user object, including the new avatar URL\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "avatar"
+                ],
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file (max 1MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User avatar updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/info": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Update user's personal information",
+        "operationId": "updateUserInfo",
+        "description": "Allows the authenticated user to update their profile information such as name and email.\n\n### Requirements:\n- **Authentication**: Required via Bearer Token\n- Both `name` and `email` are optional, but at least one must be provided\n\n### Validation:\n- **Name**:\n  - Must be a string\n  - 2–32 characters\n- **Email**:\n  - Must be a valid email address\n  - Maximum 64 characters\n\n### Behavior:\n- If both fields are missing, validation middleware should reject the request\n- Updates only the fields provided in the request body\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 32,
+                    "example": "Jane Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 64,
+                    "example": "jane@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User info updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User updated successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -627,12 +1183,44 @@
           "img": {
             "type": "string",
             "format": "binary"
-          },
-          "author": {
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
             "type": "string",
-            "example": "Updated Author Name",
-            "minLength": 4,
-            "maxLength": 50
+            "example": "64a1cbe2f4891c001e57a1d1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg"
+          },
+          "savedArticles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "64a1cbe2f4891c001e57a1f5"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T12:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-07-01T12:00:00Z"
           }
         }
       }
@@ -712,6 +1300,46 @@
                 "message": {
                   "type": "string",
                   "example": "Invalid or expired token"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Invalid": {
+        "description": "Invalid file format or missing file",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "No file provided or invalid format"
                 }
               }
             }

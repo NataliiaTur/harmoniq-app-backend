@@ -28,3 +28,5 @@ authRefresh:
             $ref: '../../components/schemas/auth/TokenResponse.yaml#/TokenResponse'
     '403':
       $ref: '../../components/responses/auth/Forbidden.yaml#/Forbidden'
+    '500':
+      description: Internal server error

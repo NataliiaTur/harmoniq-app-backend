@@ -1,0 +1,52 @@
+getUserById:
+  tags: [Users]
+  summary: Get user by ID
+  operationId: getUserById
+  description: |
+    Retrieves public information of a specific user by their unique identifier.
+
+      This endpoint is typically used to:
+      - Display the author’s profile on an article page
+      - Fetch data to populate user profile modals or pages
+      - View a contributor’s details (e.g., in admin dashboards)
+
+      ### Behavior:
+      - Only returns non-sensitive fields (e.g., name, avatar, email)
+      - Returns a 404 error if the user does not exist
+      - The `id` parameter must be a valid MongoDB ObjectId
+
+      ### Example use cases:
+      - **/users/64b7dbf2eac4a914b7d6e217** → returns user details for that ID
+      - When viewing an article written by a specific user
+
+      > ⚠️ This endpoint does not require authentication, but only public data will be returned.
+
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: MongoDB ObjectId of the user
+      schema:
+        type: string
+        example: 64b7dbf2eac4a914b7d6e217
+  security: []
+  responses:
+    '200':
+      description: User profile data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: User fetched successfully
+              data:
+                $ref: '../../components/schemas/users/User.yaml#/User'
+    '404':
+      $ref: '../../components/responses/users/NotFound.yaml#/NotFound'
+    '500':
+      description: Internal server error

@@ -27,3 +27,5 @@ authRegister:
       $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
     '409':
       $ref: '../../components/responses/auth/Conflict.yaml#/Conflict'
+    '500':
+      description: Internal server error

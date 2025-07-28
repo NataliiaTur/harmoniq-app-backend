@@ -14,8 +14,3 @@ PatchArticle:
     img:
       type: string
       format: binary
-    author:
-      type: string
-      example: 'Updated Author Name'
-      minLength: 4
-      maxLength: 50

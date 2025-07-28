@@ -18,6 +18,8 @@ tags:
     description: Auth operations.
   - name: Articles
     description: Operations related to articles.
+  - name: Users
+    description: User-related operations.
 
 paths:
   /auth/register:
@@ -44,6 +46,32 @@ paths:
       $ref: 'swagger/paths/articles/patchById.yaml#/patchArticle'
     delete:
       $ref: 'swagger/paths/articles/deleteById.yaml#/deleteArticle'
+  /users/saved-articles:
+    get:
+      $ref: 'swagger/paths/users/getSaved.yaml#/getSavedArticles'
+  /users/created-articles:
+    get:
+      $ref: 'swagger/paths/users/getCreated.yaml#/getCreatedArticles'
+  /users/current:
+    get:
+      $ref: 'swagger/paths/users/getCurrent.yaml#/getCurrentUser'
+  /users/save/{articleId}:
+    post:
+      $ref: 'swagger/paths/users/saveArticle.yaml#/saveArticle'
+    delete:
+      $ref: 'swagger/paths/users/removeSaved.yaml#/removeSavedArticle'
+  /users:
+    get:
+      $ref: 'swagger/paths/users/getAll.yaml#/getAllUsers'
+  /users/{id}:
+    get:
+      $ref: 'swagger/paths/users/getById.yaml#/getUserById'
+  /users/avatar:
+    patch:
+      $ref: 'swagger/paths/users/updateAvatar.yaml#/updateUserAvatar'
+  /users/info:
+    patch:
+      $ref: 'swagger/paths/users/updateInfo.yaml#/updateUserInfo'
 
 components:
   schemas:

@@ -13,11 +13,11 @@ export const getArticleById = async (articleId) => {
   }
   return article;
 };
-
-export const createArticle = async (payload, userId) => {
+export const createArticle = async (payload, userId, name) => {
   const article = await ArticlesCollection.create({
     ...payload,
     ownerId: userId,
+    ownerName: name,
   });
   return article;
 };
@@ -40,4 +40,12 @@ export const deleteArticle = async (articleId) => {
     throw createHttpError(404, 'Article not found');
   }
   return article;
+};
+
+export const getArticlesByOwnerId = async (ownerId) => {
+  const articles = await ArticlesCollection.find({ ownerId });
+  if (!articles) {
+    throw createHttpError(404, 'Articles not found');
+  }
+  return articles;
 };

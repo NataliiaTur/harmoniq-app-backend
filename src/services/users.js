@@ -13,7 +13,14 @@ const recalculateArticleRate = async (articleId) => {
 };
 
 export const getAllUsersService = async () => {
-  return await UserCollection.find({});
+  const users = await UserCollection.find({});
+  return users.map((user) => ({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    articlesAmount: user.articlesAmount,
+  }));
 };
 
 export const getUserByIdService = async (id) => {
@@ -21,7 +28,14 @@ export const getUserByIdService = async (id) => {
   if (!user) {
     throw createError(404, 'User not found');
   }
-  return user;
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    articlesAmount: user.articlesAmount,
+    createdAt: user.createdAt,
+  };
 };
 
 export const getSavedArticlesService = async (userId) => {

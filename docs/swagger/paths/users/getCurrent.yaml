@@ -33,7 +33,7 @@ getCurrentUser:
                 type: object
                 properties:
                   user:
-                    $ref: '../../components/schemas/users/User.yaml#/User'
+                    $ref: '../../components/schemas/users/UserPublic.yaml#/User'
     '401':
       $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
     '404':

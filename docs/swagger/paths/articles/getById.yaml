@@ -27,7 +27,7 @@ getArticleById:
       description: The ID of the article to retrieve
       schema:
         type: string
-        example: 64a1cbe2f4891c001e57a1f5
+        example: 68498236a100312bea078fe7
 
   responses:
     '200':
@@ -42,7 +42,7 @@ getArticleById:
                 example: 200
               message:
                 type: string
-                example: Successfully found article with id 64a1cbe2f4891c001e57a1f5!
+                example: Successfully found article with id 68498236a100312bea078fe7!
               data:
                 $ref: '../../components/schemas/articles/Article.yaml#/Article'
     '400':

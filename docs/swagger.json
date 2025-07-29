@@ -321,7 +321,7 @@
             "description": "The ID of the article to retrieve",
             "schema": {
               "type": "string",
-              "example": "64a1cbe2f4891c001e57a1f5"
+              "example": "68498236a100312bea078fe7"
             }
           }
         ],
@@ -339,7 +339,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found article with id 64a1cbe2f4891c001e57a1f5!"
+                      "example": "Successfully found article with id 68498236a100312bea078fe7!"
                     },
                     "data": {
                       "$ref": "#/components/schemas/Article"
@@ -463,6 +463,63 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/articles/owner/{ownerId}": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "summary": "Get all articles by owner ID",
+        "operationId": "getArticlesByOwnerId",
+        "security": [],
+        "description": "Returns a list of all articles created by a specific user.\n\nThis endpoint is useful for displaying a user's authored content on their profile or admin dashboard.\n\n### Requirements:\n- The `ownerId` must be a valid MongoDB ObjectId\n",
+        "parameters": [
+          {
+            "name": "ownerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64fcabf9471c06693c4d7365"
+            },
+            "description": "Unique identifier of the article's owner (user ID)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched articles by owner ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully found articles by owner id"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -812,7 +869,7 @@
             "description": "MongoDB ObjectId of the user",
             "schema": {
               "type": "string",
-              "example": "64b7dbf2eac4a914b7d6e217"
+              "example": "6881563901add19ee16fcff2"
             }
           }
         ],
@@ -842,7 +899,7 @@
             }
           },
           "404": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/NotFound_NotFound"
           },
           "500": {
             "description": "Internal server error"
@@ -987,7 +1044,7 @@
             "$ref": "#/components/responses/Unauthorized"
           },
           "404": {
-            "$ref": "#/components/responses/NotFound"
+            "$ref": "#/components/responses/NotFound_NotFound"
           },
           "500": {
             "description": "Internal server error"
@@ -1097,14 +1154,6 @@
             "type": "integer",
             "example": 0
           },
-          "accessToken": {
-            "type": "string",
-            "example": " "
-          },
-          "refreshToken": {
-            "type": "string",
-            "example": " "
-          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
@@ -1139,6 +1188,10 @@
           "ownerId": {
             "type": "string",
             "example": "64a1cbe2f4891c001e57a1d1"
+          },
+          "ownerName": {
+            "type": "string",
+            "example": "John Doe"
           },
           "rate": {
             "type": "number",
@@ -1200,13 +1253,17 @@
           "img": {
             "type": "string",
             "format": "binary"
+          },
+          "ownerName": {
+            "type": "string",
+            "example": "John Doe"
           }
         }
       },
       "User": {
         "type": "object",
         "properties": {
-          "_id": {
+          "id": {
             "type": "string",
             "example": "64a1cbe2f4891c001e57a1d1"
           },
@@ -1223,34 +1280,9 @@
             "example": "https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg",
             "nullable": true
           },
-          "savedArticles": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "example": "64a1cbe2f4891c001e57a1f5"
-            }
-          },
           "articlesAmount": {
             "type": "integer",
             "example": 0
-          },
-          "accessToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR..."
-          },
-          "refreshToken": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR..."
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-01-01T12:00:00Z"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-07-01T12:00:00Z"
           }
         }
       }
@@ -1337,6 +1369,26 @@
         }
       },
       "NotFound": {
+        "description": "No articles found for the given owner ID",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Articles not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound_NotFound": {
         "description": "User not found",
         "content": {
           "application/json": {

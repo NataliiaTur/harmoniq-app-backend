@@ -13,6 +13,14 @@ import {
 import { UserCollection } from '../db/models/user.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
+const clearTokens = (user) => {
+  const copy = { ...user._doc };
+  delete copy.accessToken;
+  delete copy.refreshToken;
+  delete copy.password;
+  return copy;
+};
+
 export const getAllUsers = asyncHandler(async (req, res) => {
   const users = await getAllUsersService();
   res.json({
@@ -82,21 +90,22 @@ export const updatedUserAvatar = async (req, res) => {
     { avatar: avatarURL },
     { new: true },
   );
+
   res.json({
     status: 'success',
     message: 'User updated successfully',
-    data: newUser,
+    data: clearTokens(newUser),
   });
 };
 
 export const getCurrentUserController = async (req, res) => {
   const user = await currentUserService(req.user.id);
-
+  const response = clearTokens(user);
   res.json({
     status: 200,
     message: 'Current user fetched successfully',
     data: {
-      user,
+      user: response,
     },
   });
 };
@@ -107,6 +116,6 @@ export const updateUserInfo = async (req, res) => {
   res.json({
     status: 'success',
     message: 'User updated successfully',
-    data: newUser,
+    data: clearTokens(newUser),
   });
 };

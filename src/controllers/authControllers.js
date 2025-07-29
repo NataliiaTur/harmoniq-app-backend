@@ -9,11 +9,15 @@ export const registerUserController = async (req, res) => {
   const avatarFile = req.file;
 
   const user = await registerUser(req.body, avatarFile);
+  const response = { ...user._doc };
+  delete response.accessToken;
+  delete response.refreshToken;
+  delete response.password;
 
   res.status(201).json({
     status: 201,
     message: 'Successfully registered a user!',
-    data: user,
+    data: response,
   });
 };
 

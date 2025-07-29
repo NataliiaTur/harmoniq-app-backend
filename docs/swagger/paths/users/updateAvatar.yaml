@@ -49,7 +49,7 @@ updateUserAvatar:
                 type: string
                 example: User updated successfully
               data:
-                $ref: '../../components/schemas/users/User.yaml#/User'
+                $ref: '../../components/schemas/users/UserPublic.yaml#/User'
     '400':
       $ref: '../../components/responses/users/Invalid.yaml#/Invalid'
     '401':

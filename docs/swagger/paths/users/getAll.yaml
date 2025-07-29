@@ -29,7 +29,7 @@ getAllUsers:
               data:
                 type: array
                 items:
-                  $ref: '../../components/schemas/users/User.yaml#/User'
+                  $ref: '../../components/schemas/users/UserPublic.yaml#/User'
     '400':
       $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
     '500':

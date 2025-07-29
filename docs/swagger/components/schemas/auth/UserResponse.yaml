@@ -22,12 +22,12 @@ UserResponse:
     articlesAmount:
       type: integer
       example: 0
-    accessToken:
-      type: string
-      example: ' '
-    refreshToken:
-      type: string
-      example: ' '
+    # accessToken:
+    #   type: string
+    #   example: ' '
+    # refreshToken:
+    #   type: string
+    #   example: ' '
     createdAt:
       type: string
       format: date-time

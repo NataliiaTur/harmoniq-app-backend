@@ -1,0 +1,45 @@
+getArticlesByOwnerId:
+  tags: [Articles]
+  summary: Get all articles by owner ID
+  operationId: getArticlesByOwnerId
+  security: []
+  description: |
+    Returns a list of all articles created by a specific user.
+
+    This endpoint is useful for displaying a user's authored content on their profile or admin dashboard.
+
+    ### Requirements:
+    - The `ownerId` must be a valid MongoDB ObjectId
+
+  parameters:
+    - name: ownerId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: 64fcabf9471c06693c4d7365
+      description: Unique identifier of the article's owner (user ID)
+
+  responses:
+    '200':
+      description: Successfully fetched articles by owner ID
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Successfully found articles by owner id
+              data:
+                type: array
+                items:
+                  $ref: '../../components/schemas/articles/Article.yaml#/Article'
+
+    '404':
+      $ref: '../../components/responses/articles/NotFound.yaml#/NotFound'
+    '400':
+      $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'

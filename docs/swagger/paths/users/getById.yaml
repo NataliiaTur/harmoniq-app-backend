@@ -28,7 +28,7 @@ getUserById:
       description: MongoDB ObjectId of the user
       schema:
         type: string
-        example: 64b7dbf2eac4a914b7d6e217
+        example: 6881563901add19ee16fcff2
   security: []
   responses:
     '200':
@@ -45,7 +45,7 @@ getUserById:
                 type: string
                 example: User fetched successfully
               data:
-                $ref: '../../components/schemas/users/User.yaml#/User'
+                $ref: '../../components/schemas/users/UserPublic.yaml#/User'
     '404':
       $ref: '../../components/responses/users/NotFound.yaml#/NotFound'
     '500':

@@ -16,6 +16,9 @@ Article:
     ownerId:
       type: string
       example: '64a1cbe2f4891c001e57a1d1'
+    ownerName:
+      type: string
+      example: 'John Doe'
     rate:
       type: number
       example: 4.5

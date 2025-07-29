@@ -14,3 +14,6 @@ PatchArticle:
     img:
       type: string
       format: binary
+    ownerName:
+      type: string
+      example: 'John Doe'

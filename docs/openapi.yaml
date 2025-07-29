@@ -71,6 +71,9 @@ paths:
       $ref: 'swagger/paths/articles/patchById.yaml#/patchArticle'
     delete:
       $ref: 'swagger/paths/articles/deleteById.yaml#/deleteArticle'
+  /articles/owner/{ownerId}:
+    get:
+      $ref: 'swagger/paths/articles/getByOwnerId.yaml#/getArticlesByOwnerId'
   /users/saved-articles:
     get:
       $ref: 'swagger/paths/users/getSaved.yaml#/getSavedArticles'

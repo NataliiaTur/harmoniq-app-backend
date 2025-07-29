@@ -17,3 +17,10 @@ export const isValidArticleId = (req, res, next) => {
   next();
 };
 
+export const isValidOwnerId = (req, res, next) => {
+  const { ownerId } = req.params;
+  if (!isValidObjectId(ownerId)) {
+    throw createHttpError(400, `${ownerId} is not a valid id`);
+  }
+  next();
+};

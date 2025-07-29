@@ -5,6 +5,7 @@ import {
   deleteArticleController,
   getArticleByIdController,
   getArticlesController,
+  getArticlesByOwnerIdController,
   patchArticleController,
 } from '../controllers/articleControllers.js';
 import {
@@ -12,7 +13,7 @@ import {
   updateArticleSchema,
 } from '../validation/articleValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { isValidArticleId } from '../middlewares/isValidId.js';
+import { isValidArticleId, isValidOwnerId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { upload } from '../middlewares/multer.js';
 
@@ -44,6 +45,12 @@ router.delete(
   isValidArticleId,
   authenticate,
   ctrlWrapper(deleteArticleController),
+);
+
+router.get(
+  '/owner/:ownerId',
+  isValidOwnerId,
+  ctrlWrapper(getArticlesByOwnerIdController),
 );
 
 export default router;

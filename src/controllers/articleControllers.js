@@ -4,6 +4,7 @@ import {
   getAllArticles,
   getArticleById,
   patchArticle,
+  getArticlesByOwnerId,
 } from '../services/articles.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
@@ -35,6 +36,7 @@ export const createArticleController = async (req, res) => {
   const newArticle = await createArticle(
     { ...req.body, img: photoUrl },
     req.user.id,
+    req.user.name,
   );
   res.status(201).json({
     status: 201,
@@ -65,4 +67,14 @@ export const deleteArticleController = async (req, res) => {
   const { articleId } = req.params;
   await deleteArticle(articleId);
   res.status(204).send();
+};
+
+export const getArticlesByOwnerIdController = async (req, res) => {
+  const { ownerId } = req.params;
+  const articles = await getArticlesByOwnerId(ownerId);
+  res.json({
+    status: 200,
+    message: 'Successfully found articles by owner id',
+    data: articles,
+  });
 };

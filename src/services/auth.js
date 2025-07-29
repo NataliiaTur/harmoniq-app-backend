@@ -64,6 +64,7 @@ export const loginUser = async ({ email, password }) => {
   const refreshToken = generateRefreshToken(payload);
 
   user.refreshToken = refreshToken;
+  user.accessToken = accessToken;
   await user.save();
 
   return {
@@ -116,5 +117,6 @@ export const logoutUser = async (userId) => {
   }
 
   user.refreshToken = '';
+  user.accessToken = '';
   await user.save();
 };

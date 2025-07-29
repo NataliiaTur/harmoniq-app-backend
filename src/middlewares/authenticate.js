@@ -15,7 +15,7 @@ export const authenticate = async (req, res, next) => {
     const payload = verifyAccessToken(token);
     const user = await UserCollection.findById(payload.id);
 
-    if (!user) {
+    if (!user || user.accessToken !== token) {
       throw createHttpError(401, 'Not authorized (user not found)');
     }
 

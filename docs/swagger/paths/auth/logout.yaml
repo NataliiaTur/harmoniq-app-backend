@@ -1,12 +1,12 @@
 authLogout:
   tags: [Auth]
   operationId: authLogout
-  summary: Endpoint for logging out the user by invalidating the refresh token
+  summary: Endpoint for logging out the user by invalidating tokens
   description: |
-    Logs out the currently authenticated user by clearing their stored refresh token.
+    Logs out the currently authenticated user by clearing their stored tokens.
 
     - Requires a **valid access token** in the Authorization header
-    - Clears the **refresh token** from the user record in the database
+    - Clears the **refresh token* and **access token** from the user record in the database
     - Should be called when the user logs out manually or ends the session
   security:
     - bearerAuth: []

@@ -2,35 +2,35 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Harmoniq App API",
-    "description": "API documentation for the Harmoniq application backend",
+    "description": "**Harmoniq App** is a backend API for a modern web application that allows users to register, authenticate, save favorite articles, and manage their profile. The API follows a `RESTful` structure and returns responses in `JSON format`.\n\n### Key Features:\n- User registration with avatar upload (multipart/form-data supported)\n- Login and logout functionality using JWT authentication\n- Access and Refresh token generation\n- Email verification after registration\n- File uploads to Cloudinary\n- Articles collection saves in MongoDB\n- Route protection using authentication middleware\n- Request validation using Joi\n\n### Technologies Used:\n- **Node.js** + **Express.js** — backend platform\n- **MongoDB** + **Mongoose** — database and ORM\n- **JWT (JSON Web Tokens)** — authentication system\n- **Multer** — file handling for multipart/form-data\n- **Cloudinary** — cloud image storage\n- **Joi** — input validation\n- **dotenv** — environment variable management\n- **Swagger (OpenAPI)** — API documentation\n\n### Source code:\n[https://github.com/StasSkv/harmoniq-app-backend](https://github.com/StasSkv/harmoniq-app-backend)\n",
     "version": "1.0.0",
     "license": {
-      "name": "MIT",
+      "name": "MIT License",
       "url": "https://opensource.org/licenses/MIT"
     }
   },
   "servers": [
     {
       "url": "http://localhost:3000",
-      "description": "Local development server."
+      "description": "Local development server"
     },
     {
       "url": "https://harmoniq-app-backend.onrender.com",
-      "description": "Production server."
+      "description": "Production server"
     }
   ],
   "tags": [
     {
       "name": "Auth",
-      "description": "Auth operations."
+      "description": "Auth operations"
     },
     {
       "name": "Articles",
-      "description": "Operations related to articles."
+      "description": "Operations related to articles"
     },
     {
       "name": "Users",
-      "description": "User-related operations."
+      "description": "User-related operations"
     }
   ],
   "paths": {
@@ -121,8 +121,8 @@
           "Auth"
         ],
         "operationId": "authLogout",
-        "summary": "Endpoint for logging out the user by invalidating the refresh token",
-        "description": "Logs out the currently authenticated user by clearing their stored refresh token.\n\n- Requires a **valid access token** in the Authorization header\n- Clears the **refresh token** from the user record in the database\n- Should be called when the user logs out manually or ends the session\n",
+        "summary": "Endpoint for logging out the user by invalidating tokens",
+        "description": "Logs out the currently authenticated user by clearing their stored tokens.\n\n- Requires a **valid access token** in the Authorization header\n- Clears the **refresh token* and **access token** from the user record in the database\n- Should be called when the user logs out manually or ends the session\n",
         "security": [
           {
             "bearerAuth": []
@@ -1069,34 +1069,51 @@
       "UserResponse": {
         "type": "object",
         "properties": {
-          "status": {
-            "type": "integer",
-            "example": 201
-          },
-          "message": {
+          "_id": {
             "type": "string",
-            "example": "Successfully registered a user!"
+            "example": "64a1cbe2f4891c001e57a1d1"
           },
-          "data": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "example": "60d0fe4f5311236168a109ca"
-              },
-              "name": {
-                "type": "string",
-                "example": "John Doe"
-              },
-              "email": {
-                "type": "string",
-                "example": "john@example.com"
-              },
-              "avatar": {
-                "type": "string",
-                "example": "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-              }
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg",
+            "nullable": true
+          },
+          "savedArticles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": " "
             }
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "example": 0
+          },
+          "accessToken": {
+            "type": "string",
+            "example": " "
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": " "
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T12:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-07-01T12:00:00Z"
           }
         }
       },
@@ -1203,7 +1220,8 @@
           },
           "avatar": {
             "type": "string",
-            "example": "https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg"
+            "example": "https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg",
+            "nullable": true
           },
           "savedArticles": {
             "type": "array",
@@ -1211,6 +1229,18 @@
               "type": "string",
               "example": "64a1cbe2f4891c001e57a1f5"
             }
+          },
+          "articlesAmount": {
+            "type": "integer",
+            "example": 0
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR..."
           },
           "createdAt": {
             "type": "string",

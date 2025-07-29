@@ -13,11 +13,21 @@ User:
     avatar:
       type: string
       example: 'https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg'
+      nullable: true
     savedArticles:
       type: array
       items:
         type: string
         example: '64a1cbe2f4891c001e57a1f5'
+    articlesAmount:
+      type: integer
+      example: 0
+    accessToken:
+      type: string
+      example: 'eyJhbGciOiJIUzI1NiIsInR...'
+    refreshToken:
+      type: string
+      example: 'eyJhbGciOiJIUzI1NiIsInR...'
     createdAt:
       type: string
       format: date-time

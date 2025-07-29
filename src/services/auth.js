@@ -67,15 +67,7 @@ export const loginUser = async ({ email, password }) => {
   user.accessToken = accessToken;
   await user.save();
 
-  return {
-    accessToken,
-    refreshToken,
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-    },
-  };
+  return user;
 };
 
 //refresh

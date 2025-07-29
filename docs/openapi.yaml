@@ -1,25 +1,50 @@
 openapi: 3.0.0
 info:
   title: Harmoniq App API
-  description: API documentation for the Harmoniq application backend
+  description: |
+    **Harmoniq App** is a backend API for a modern web application that allows users to register, authenticate, save favorite articles, and manage their profile. The API follows a `RESTful` structure and returns responses in `JSON format`.
+
+    ### Key Features:
+    - User registration with avatar upload (multipart/form-data supported)
+    - Login and logout functionality using JWT authentication
+    - Access and Refresh token generation
+    - Email verification after registration
+    - File uploads to Cloudinary
+    - Articles collection saves in MongoDB
+    - Route protection using authentication middleware
+    - Request validation using Joi
+
+    ### Technologies Used:
+    - **Node.js** + **Express.js** — backend platform
+    - **MongoDB** + **Mongoose** — database and ORM
+    - **JWT (JSON Web Tokens)** — authentication system
+    - **Multer** — file handling for multipart/form-data
+    - **Cloudinary** — cloud image storage
+    - **Joi** — input validation
+    - **dotenv** — environment variable management
+    - **Swagger (OpenAPI)** — API documentation
+
+    ### Source code:
+    [https://github.com/StasSkv/harmoniq-app-backend](https://github.com/StasSkv/harmoniq-app-backend)
+
   version: 1.0.0
   license:
-    name: MIT
+    name: MIT License
     url: https://opensource.org/licenses/MIT
 
 servers:
   - url: http://localhost:3000
-    description: Local development server.
+    description: Local development server
   - url: https://harmoniq-app-backend.onrender.com
-    description: Production server.
+    description: Production server
 
 tags:
   - name: Auth
-    description: Auth operations.
+    description: Auth operations
   - name: Articles
-    description: Operations related to articles.
+    description: Operations related to articles
   - name: Users
-    description: User-related operations.
+    description: User-related operations
 
 paths:
   /auth/register:

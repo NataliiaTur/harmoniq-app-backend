@@ -14,7 +14,6 @@ export const registerUserController = async (req, res) => {
     status: 201,
     message: 'Successfully registered a user!',
     data: user,
-    avatar: user.avatar,
   });
 };
 

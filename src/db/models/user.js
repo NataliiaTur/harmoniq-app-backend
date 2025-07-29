@@ -26,6 +26,10 @@ const userSchema = new Schema(
       type: String,
       default: '',
     },
+    accessToken: {
+      type: String,
+      default: '',
+    },
     articlesAmount: {
       type: Number,
       default: 0,

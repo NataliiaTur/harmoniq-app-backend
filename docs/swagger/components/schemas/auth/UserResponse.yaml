@@ -1,24 +1,38 @@
 UserResponse:
   type: object
   properties:
-    status:
-      type: integer
-      example: 201
-    message:
+    _id:
       type: string
-      example: Successfully registered a user!
-    data:
-      type: object
-      properties:
-        _id:
-          type: string
-          example: '60d0fe4f5311236168a109ca'
-        name:
-          type: string
-          example: 'John Doe'
-        email:
-          type: string
-          example: 'john@example.com'
-        avatar:
-          type: string
-          example: 'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+      example: '64a1cbe2f4891c001e57a1d1'
+    name:
+      type: string
+      example: 'Jane Doe'
+    email:
+      type: string
+      example: 'jane@example.com'
+    avatar:
+      type: string
+      example: 'https://res.cloudinary.com/demo/image/upload/v12345678/avatar.jpg'
+      nullable: true
+    savedArticles:
+      type: array
+      items:
+        type: string
+        example: ' '
+    articlesAmount:
+      type: integer
+      example: 0
+    accessToken:
+      type: string
+      example: ' '
+    refreshToken:
+      type: string
+      example: ' '
+    createdAt:
+      type: string
+      format: date-time
+      example: '2025-01-01T12:00:00Z'
+    updatedAt:
+      type: string
+      format: date-time
+      example: '2025-07-01T12:00:00Z'

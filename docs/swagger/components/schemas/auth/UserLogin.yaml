@@ -6,7 +6,10 @@ UserLogin:
   properties:
     email:
       type: string
+      maxLength: 64
       example: john@example.com
     password:
       type: string
+      minLength: 8
+      maxLength: 64
       example: mysecurepassword

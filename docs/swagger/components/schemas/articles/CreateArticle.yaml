@@ -19,3 +19,4 @@ CreateArticle:
     img:
       type: string
       format: binary
+      description: Image file (JPEG/PNG, max 1MB)

@@ -22,7 +22,8 @@ const clearTokens = (user) => {
 };
 
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await getAllUsersService();
+  const { filter, limit } = req.query;
+  const users = await getAllUsersService(filter, limit);
   res.json({
     status: 'success',
     message: 'Users fetched successfully',

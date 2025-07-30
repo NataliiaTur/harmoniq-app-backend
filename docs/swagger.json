@@ -207,13 +207,43 @@
         "tags": [
           "Articles"
         ],
-        "summary": "Get a list of all articles",
+        "summary": "Get a list of articles (with optional filters)",
         "operationId": "getArticles",
         "security": [],
-        "description": "Returns a list of all available articles from the database.\n\nEach article contains the following:\n- **img** (optional): URL to the article's image.\n- **title** (required): Title of the article.\n- **article** (required): Full content of the article.\n- **ownerId** (required): The ID of the user who created the article.\n- **rate** (optional): A numeric rating value (default is 0).\n- **createdAt** / **updatedAt**: Timestamps for article creation and last update.\n\nThis endpoint does not require authentication.\n\n### Use case:\nCan be used to:\n- Display all articles to end users on the frontend\n- Feed content into a news/blog UI component\n- Enable further filtering or searching by client-side logic\n",
+        "description": "Returns a list of articles from the database.\nOptional query parameters allow filtering, sorting, and limiting results.\n\n### Article fields:\n- **img** (optional): URL to the article's image.\n- **title** (required): Title of the article.\n- **article** (required): Full content of the article.\n- **ownerId** (required): The ID of the user who created the article.\n- **rate** (optional): A numeric rating value (default is 0).\n- **createdAt** / **updatedAt**: Timestamps for creation and update.\n\n### Optional Query Parameters:\n- `filter=popular`: Returns articles sorted by descending rating.\n- `limit=4`: Limits the number of returned articles.\n- `ownerId=<userId>`: Returns only articles created by a specific user.\n\n**Example use cases:**\n- Show top 4 popular articles on the home page:\n  `/api/articles?filter=popular&limit=4`\n- Show all articles of a specific author:\n  `/api/articles?ownerId=64f3...`\n- Show all articles (default):\n  `/api/articles`\n\nThis endpoint does **not** require authentication.\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "popular"
+              ]
+            },
+            "description": "Apply special filtering, e.g., `popular` for top-rated articles."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Limit the number of returned articles."
+          },
+          {
+            "in": "query",
+            "name": "ownerId",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter articles by owner (user) ID."
+          }
+        ],
         "responses": {
           "200": {
-            "description": "A list of articles",
+            "description": "A list of articles matching the query",
             "content": {
               "application/json": {
                 "schema": {
@@ -225,7 +255,7 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Successfully found articles!"
+                      "example": "Articles fetched successfully"
                     },
                     "data": {
                       "type": "array",
@@ -472,7 +502,7 @@
         "tags": [
           "Articles"
         ],
-        "summary": "Get all articles by owner ID",
+        "summary": "Get all articles by owner ID (DEPRECATED)",
         "operationId": "getArticlesByOwnerId",
         "security": [],
         "description": "Returns a list of all articles created by a specific user.\n\nThis endpoint is useful for displaying a user's authored content on their profile or admin dashboard.\n\n### Requirements:\n- The `ownerId` must be a valid MongoDB ObjectId\n",
@@ -581,7 +611,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Get articles created by the authenticated user",
+        "summary": "Get articles created by the authenticated user (DEPRECATED)",
         "operationId": "getCreatedArticles",
         "description": "Returns a list of articles authored (created) by the currently authenticated user.\n\nRequires a valid Bearer token to identify the user.\n\nThis endpoint filters articles in the database by `ownerId` field, matching the authenticated user's ID.\n\n### Use cases:\n- Show a user their authored content\n- Allow user to manage/edit their own posts\n",
         "security": [
@@ -813,13 +843,37 @@
         "tags": [
           "Users"
         ],
-        "summary": "Get a list of all article authors",
+        "summary": "Get a list of all article authors (with optional filters)",
         "operationId": "getAllUsers",
-        "description": "Returns a list of users who have authored at least one article on the site.\n\n  Each user object may include public fields such as name, avatar etc.\n\n  ### Use cases:\n  - Display list of authors on a blog or article index page\n  - Show author info in filters or navigation\n",
+        "description": "Returns a list of users who have authored articles on the site.\n\nOptionally supports filtering and limiting results via query parameters.\n\n### Optional query parameters:\n- **filter=popular** — return users sorted by the number of created articles in descending order\n- **limit=number** — limit the number of returned users (e.g. `limit=6`)\n\n### Use cases:\n- Display list of top authors on the homepage (e.g. \"Top Creators\" section)\n- Show author info in filters or navigation\n- Paginate or preview the full author list\n",
         "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "popular"
+              ]
+            },
+            "required": false,
+            "description": "Optional filter to sort users by number of articles (use `top`)"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "required": false,
+            "description": "Optional limit on the number of users returned"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of all users",
+            "description": "List of users",
             "content": {
               "application/json": {
                 "schema": {

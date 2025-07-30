@@ -1,6 +1,6 @@
 getArticlesByOwnerId:
   tags: [Articles]
-  summary: Get all articles by owner ID
+  summary: Get all articles by owner ID (DEPRECATED)
   operationId: getArticlesByOwnerId
   security: []
   description: |

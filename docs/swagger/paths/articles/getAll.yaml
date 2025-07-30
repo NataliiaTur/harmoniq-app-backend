@@ -1,29 +1,55 @@
 getArticles:
   tags: [Articles]
-  summary: Get a list of all articles
+  summary: Get a list of articles (with optional filters)
   operationId: getArticles
   security: []
   description: |
-    Returns a list of all available articles from the database.
+    Returns a list of articles from the database.
+    Optional query parameters allow filtering, sorting, and limiting results.
 
-    Each article contains the following:
+    ### Article fields:
     - **img** (optional): URL to the article's image.
     - **title** (required): Title of the article.
     - **article** (required): Full content of the article.
     - **ownerId** (required): The ID of the user who created the article.
     - **rate** (optional): A numeric rating value (default is 0).
-    - **createdAt** / **updatedAt**: Timestamps for article creation and last update.
+    - **createdAt** / **updatedAt**: Timestamps for creation and update.
 
-    This endpoint does not require authentication.
+    ### Optional Query Parameters:
+    - `filter=popular`: Returns articles sorted by descending rating.
+    - `limit=4`: Limits the number of returned articles.
+    - `ownerId=<userId>`: Returns only articles created by a specific user.
 
-    ### Use case:
-    Can be used to:
-    - Display all articles to end users on the frontend
-    - Feed content into a news/blog UI component
-    - Enable further filtering or searching by client-side logic
+    **Example use cases:**
+    - Show top 4 popular articles on the home page:
+      `/api/articles?filter=popular&limit=4`
+    - Show all articles of a specific author:
+      `/api/articles?ownerId=64f3...`
+    - Show all articles (default):
+      `/api/articles`
+
+    This endpoint does **not** require authentication.
+  parameters:
+    - in: query
+      name: filter
+      schema:
+        type: string
+        enum: [popular]
+      description: Apply special filtering, e.g., `popular` for top-rated articles.
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+      description: Limit the number of returned articles.
+    - in: query
+      name: ownerId
+      schema:
+        type: string
+      description: Filter articles by owner (user) ID.
   responses:
     '200':
-      description: A list of articles
+      description: A list of articles matching the query
       content:
         application/json:
           schema:
@@ -34,7 +60,7 @@ getArticles:
                 example: 200
               message:
                 type: string
-                example: Successfully found articles!
+                example: Articles fetched successfully
               data:
                 type: array
                 items:

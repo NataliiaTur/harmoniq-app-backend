@@ -1,9 +1,20 @@
 import createHttpError from 'http-errors';
 import { ArticlesCollection } from '../db/models/article.js';
+import { UserCollection } from '../db/models/user.js';
 
-export const getAllArticles = async () => {
-  const articles = await ArticlesCollection.find();
-  return articles;
+export const getAllArticles = async (filter, limit, ownerId) => {
+  const query = {};
+  if (ownerId) {
+    query.ownerId = ownerId;
+  }
+  let articles = ArticlesCollection.find(query);
+  if (filter === 'popular') {
+    articles = articles.sort({ rate: -1 });
+  }
+  if (limit && !isNaN(Number(limit))) {
+    articles = articles.limit(Number(limit));
+  }
+  return await articles;
 };
 
 export const getArticleById = async (articleId) => {
@@ -19,6 +30,9 @@ export const createArticle = async (payload, userId, name) => {
     ownerId: userId,
     ownerName: name,
   });
+  const user = await UserCollection.findById(userId);
+  user.articlesAmount += 1;
+  await user.save();
   return article;
 };
 

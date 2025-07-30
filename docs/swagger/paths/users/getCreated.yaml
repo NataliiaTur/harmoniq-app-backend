@@ -1,6 +1,6 @@
 getCreatedArticles:
   tags: [Users]
-  summary: Get articles created by the authenticated user
+  summary: Get articles created by the authenticated user (DEPRECATED)
   operationId: getCreatedArticles
   description: |
     Returns a list of articles authored (created) by the currently authenticated user.

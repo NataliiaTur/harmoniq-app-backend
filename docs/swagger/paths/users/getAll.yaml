@@ -1,20 +1,41 @@
 getAllUsers:
   tags: [Users]
-  summary: Get a list of all article authors
+  summary: Get a list of all article authors (with optional filters)
   operationId: getAllUsers
   description: |
-    Returns a list of users who have authored at least one article on the site.
+    Returns a list of users who have authored articles on the site.
 
-      Each user object may include public fields such as name, avatar etc.
+    Optionally supports filtering and limiting results via query parameters.
 
-      ### Use cases:
-      - Display list of authors on a blog or article index page
-      - Show author info in filters or navigation
+    ### Optional query parameters:
+    - **filter=popular** — return users sorted by the number of created articles in descending order
+    - **limit=number** — limit the number of returned users (e.g. `limit=6`)
+
+    ### Use cases:
+    - Display list of top authors on the homepage (e.g. "Top Creators" section)
+    - Show author info in filters or navigation
+    - Paginate or preview the full author list
 
   security: []
+  parameters:
+    - in: query
+      name: filter
+      schema:
+        type: string
+        enum: [popular]
+      required: false
+      description: Optional filter to sort users by number of articles (use `top`)
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+      required: false
+      description: Optional limit on the number of users returned
+
   responses:
     '200':
-      description: List of all users
+      description: List of users
       content:
         application/json:
           schema:

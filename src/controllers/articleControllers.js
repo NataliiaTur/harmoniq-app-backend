@@ -9,7 +9,8 @@ import {
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getArticlesController = async (req, res) => {
-  const articles = await getAllArticles();
+  const { filter, limit, ownerId } = req.query;
+  const articles = await getAllArticles(filter, limit, ownerId);
   res.json({
     status: 200,
     message: 'Successfully found articles!',
@@ -31,7 +32,7 @@ export const createArticleController = async (req, res) => {
   const photo = req.file;
   let photoUrl = null;
   if (photo) {
-      photoUrl = await saveFileToCloudinary(photo);
+    photoUrl = await saveFileToCloudinary(photo);
   }
   const newArticle = await createArticle(
     { ...req.body, img: photoUrl },

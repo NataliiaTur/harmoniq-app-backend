@@ -12,8 +12,16 @@ const recalculateArticleRate = async (articleId) => {
   });
 };
 
-export const getAllUsersService = async () => {
-  const users = await UserCollection.find({});
+export const getAllUsersService = async (filter, limit) => {
+  let usersQuery = UserCollection.find();
+
+  if (filter === 'top') {
+    usersQuery = usersQuery.sort({ articlesAmount: -1 });
+  }
+  if (limit) {
+    usersQuery = usersQuery.limit(Number(limit));
+  }
+  const users = await usersQuery.exec();
   return users.map((user) => ({
     id: user._id,
     name: user.name,

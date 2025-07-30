@@ -15,7 +15,7 @@ const recalculateArticleRate = async (articleId) => {
 export const getAllUsersService = async (filter, limit) => {
   let usersQuery = UserCollection.find();
 
-  if (filter === 'top') {
+  if (filter === 'popular') {
     usersQuery = usersQuery.sort({ articlesAmount: -1 });
   }
   if (limit) {

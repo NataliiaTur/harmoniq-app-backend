@@ -845,7 +845,7 @@
         ],
         "summary": "Get a list of all article authors (with optional filters)",
         "operationId": "getAllUsers",
-        "description": "Returns a list of users who have authored articles on the site.\n\nOptionally supports filtering and limiting results via query parameters.\n\n### Optional query parameters:\n- **filter=top** — return users sorted by the number of created articles in descending order\n- **limit=number** — limit the number of returned users (e.g. `limit=6`)\n\n### Use cases:\n- Display list of top authors on the homepage (e.g. \"Top Creators\" section)\n- Show author info in filters or navigation\n- Paginate or preview the full author list\n",
+        "description": "Returns a list of users who have authored articles on the site.\n\nOptionally supports filtering and limiting results via query parameters.\n\n### Optional query parameters:\n- **filter=popular** — return users sorted by the number of created articles in descending order\n- **limit=number** — limit the number of returned users (e.g. `limit=6`)\n\n### Use cases:\n- Display list of top authors on the homepage (e.g. \"Top Creators\" section)\n- Show author info in filters or navigation\n- Paginate or preview the full author list\n",
         "security": [],
         "parameters": [
           {
@@ -854,7 +854,7 @@
             "schema": {
               "type": "string",
               "enum": [
-                "top"
+                "popular"
               ]
             },
             "required": false,

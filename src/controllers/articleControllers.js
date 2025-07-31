@@ -9,12 +9,36 @@ import {
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export const getArticlesController = async (req, res) => {
-  const { filter, limit, ownerId } = req.query;
-  const articles = await getAllArticles(filter, limit, ownerId);
-  res.json({
+  const { filter = 'all', limit, page, ownerId } = req.query;
+
+  const shouldPaginate = limit !== undefined && page !== undefined;
+
+  if (shouldPaginate) {
+    const limitNum = Number(limit);
+    const pageNum = Number(page);
+    const skip = (pageNum - 1) * limitNum;
+
+    const { data, total } = await getAllArticles(
+      filter,
+      limitNum,
+      skip,
+      ownerId,
+    );
+
+    return res.json({
+      status: 200,
+      message: 'Successfully found paginated articles!',
+      data,
+      total,
+    });
+  }
+
+  const { data } = await getAllArticles(filter, limit, null, ownerId);
+
+  return res.json({
     status: 200,
     message: 'Successfully found articles!',
-    data: articles,
+    data,
   });
 };
 

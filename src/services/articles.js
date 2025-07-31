@@ -2,19 +2,36 @@ import createHttpError from 'http-errors';
 import { ArticlesCollection } from '../db/models/article.js';
 import { UserCollection } from '../db/models/user.js';
 
-export const getAllArticles = async (filter, limit, ownerId) => {
+export const getAllArticles = async (
+  filter,
+  limit = null,
+  skip = null,
+  ownerId = null,
+) => {
   const query = {};
+
+  if (filter === 'popular') {
+    query.rate = { $gt: 0 };
+  }
+
   if (ownerId) {
     query.ownerId = ownerId;
   }
-  let articles = ArticlesCollection.find(query);
-  if (filter === 'popular') {
-    articles = articles.sort({ rate: -1 });
+
+  if (limit === null && skip === null) {
+    const articles = await ArticlesCollection.find(query);
+    return { data: articles };
   }
-  if (limit && !isNaN(Number(limit))) {
-    articles = articles.limit(Number(limit));
-  }
-  return await articles;
+
+  const [articles, total] = await Promise.all([
+    ArticlesCollection.find(query).skip(skip).limit(limit),
+    ArticlesCollection.countDocuments(query),
+  ]);
+
+  return {
+    data: articles,
+    total,
+  };
 };
 
 export const getArticleById = async (articleId) => {

@@ -7,13 +7,19 @@ UserRegister:
   properties:
     name:
       type: string
+      minLength: 2
+      maxLength: 32
       example: John Doe
     email:
       type: string
+      maxLength: 64
       example: john@example.com
     password:
       type: string
+      minLength: 8
+      maxLength: 64
       example: mysecurepassword
     avatar:
       type: string
       format: binary
+      description: User avatar image file (JPEG/PNG, max 1MB)

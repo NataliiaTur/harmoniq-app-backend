@@ -9,9 +9,10 @@ export const getAllArticles = async (
   ownerId = null,
 ) => {
   const query = {};
-
+  let sort = {};
   if (filter === 'popular') {
     query.rate = { $gt: 0 };
+    sort = { rate: -1 };
   }
 
   if (ownerId) {
@@ -19,12 +20,12 @@ export const getAllArticles = async (
   }
 
   if (limit === null && skip === null) {
-    const articles = await ArticlesCollection.find(query);
+    const articles = await ArticlesCollection.find(query).sort(sort);
     return { data: articles };
   }
 
   const [articles, total] = await Promise.all([
-    ArticlesCollection.find(query).skip(skip).limit(limit),
+    ArticlesCollection.find(query).sort(sort).skip(skip).limit(limit),
     ArticlesCollection.countDocuments(query),
   ]);
 

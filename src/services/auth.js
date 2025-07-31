@@ -92,6 +92,7 @@ export const refreshTokens = async (token) => {
   const newRefreshToken = generateRefreshToken({ id: user._id });
 
   user.refreshToken = newRefreshToken;
+  user.accessToken = newAccessToken;
   await user.save();
 
   return {

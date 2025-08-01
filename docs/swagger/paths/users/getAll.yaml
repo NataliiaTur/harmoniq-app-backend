@@ -1,20 +1,25 @@
 getAllUsers:
   tags: [Users]
-  summary: Get a list of all article authors (with optional filters)
+  summary: Get a list of all article authors (with optional filters and pagination)
   operationId: getAllUsers
   description: |
     Returns a list of users who have authored articles on the site.
 
-    Optionally supports filtering and limiting results via query parameters.
+    Supports filtering, limiting, and optional pagination via query parameters.
 
     ### Optional query parameters:
-    - **filter=popular** — return users sorted by the number of created articles in descending order
-    - **limit=number** — limit the number of returned users (e.g. `limit=6`)
+    - **filter=popular** — return users sorted by the number of created articles in descending order.
+    - **limit=number** — limit the number of returned users (e.g. `limit=6`).
+      If pagination is not used, this limit still applies.
+    - **page=number** — used for pagination (e.g. `page=2`).
+    - **perPage=number** — number of users per page (default is `20`).
 
-    ### Use cases:
-    - Display list of top authors on the homepage (e.g. "Top Creators" section)
-    - Show author info in filters or navigation
-    - Paginate or preview the full author list
+    ### Example use cases:
+    - Show top 6 authors: `/api/users?filter=popular&limit=6`
+    - Paginate full author list: `/api/users?page=2&perPage=10`
+    - Get all authors sorted by popularity (default limit 20): `/api/users?filter=popular`
+
+    This endpoint does **not** require authentication.
 
   security: []
   parameters:
@@ -24,14 +29,28 @@ getAllUsers:
         type: string
         enum: [popular]
       required: false
-      description: Optional filter to sort users by number of articles (use `top`)
+      description: Sort users by number of articles in descending order.
     - in: query
       name: limit
       schema:
         type: integer
         minimum: 1
       required: false
-      description: Optional limit on the number of users returned
+      description: Limit the number of users returned. Works with or without pagination.
+    - in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+      required: false
+      description: Page number (for pagination).
+    - in: query
+      name: perPage
+      schema:
+        type: integer
+        minimum: 1
+      required: false
+      description: Number of users per page (default is 20, for pagination).
 
   responses:
     '200':
@@ -51,6 +70,28 @@ getAllUsers:
                 type: array
                 items:
                   $ref: '../../components/schemas/users/UserPublic.yaml#/User'
+              pagination:
+                type: object
+                nullable: true
+                properties:
+                  page:
+                    type: integer
+                    example: 1
+                  perPage:
+                    type: integer
+                    example: 20
+                  totalItems:
+                    type: integer
+                    example: 86
+                  totalPages:
+                    type: integer
+                    example: 5
+                  hasNextPage:
+                    type: boolean
+                    example: true
+                  hasPreviousPage:
+                    type: boolean
+                    example: false
     '400':
       $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
     '500':

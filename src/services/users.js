@@ -2,6 +2,7 @@ import { UserCollection } from '../db/models/user.js';
 import { ArticlesCollection } from '../db/models/article.js';
 import createError from 'http-errors';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { sanitizeText } from '../utils/sanitizer.js';
 
 const recalculateArticleRate = async (articleId) => {
   const count = await UserCollection.countDocuments({
@@ -12,23 +13,39 @@ const recalculateArticleRate = async (articleId) => {
   });
 };
 
-export const getAllUsersService = async (filter, limit) => {
-  let usersQuery = UserCollection.find();
+export const getAllUsersService = async (filter, limit = null, skip = null) => {
+  const query = {};
+  let sort = {};
 
   if (filter === 'popular') {
-    usersQuery = usersQuery.sort({ articlesAmount: -1 });
+    sort = { articlesAmount: -1 };
   }
-  if (limit) {
-    usersQuery = usersQuery.limit(Number(limit));
+
+  const findQuery = UserCollection.find(query).sort(sort);
+
+  if (skip !== null) {
+    findQuery.skip(skip);
   }
-  const users = await usersQuery.exec();
-  return users.map((user) => ({
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    avatar: user.avatar,
-    articlesAmount: user.articlesAmount,
-  }));
+
+  if (limit !== null) {
+    findQuery.limit(Number(limit));
+  }
+
+  const [users, total] = await Promise.all([
+    findQuery.exec(),
+    UserCollection.countDocuments(query),
+  ]);
+
+  return {
+    data: users.map((user) => ({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      articlesAmount: user.articlesAmount,
+    })),
+    total,
+  };
 };
 
 export const getUserByIdService = async (id) => {
@@ -96,8 +113,8 @@ export const updateUserPhotoService = async (userId, file) => {
 export const updateUserInfoService = async (userId, info) => {
   const user = await UserCollection.findById(userId);
   if (!user) throw createError(404, 'User not found');
-  if (info.name) user.name = info.name;
-  if (info.email) user.email = info.email;
+  if (info.name) user.name = sanitizeText(info.name);
+  if (info.email) user.email = info.email.trim();
   await user.save();
   return user;
 };

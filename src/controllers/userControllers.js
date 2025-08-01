@@ -12,6 +12,8 @@ import {
 
 import { UserCollection } from '../db/models/user.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 const clearTokens = (user) => {
   const copy = { ...user._doc };
@@ -23,18 +25,37 @@ const clearTokens = (user) => {
 
 export const getAllUsers = asyncHandler(async (req, res) => {
   const { filter, limit } = req.query;
-  const users = await getAllUsersService(filter, limit);
+
+  const paginationEnabled = 'page' in req.query;
+  const defaultPerPage = 20;
+
+  if (!paginationEnabled) {
+    const users = await getAllUsersService(filter, limit, null);
+    return res.json({
+      status: '200',
+      message: 'Users fetched successfully',
+      data: users,
+    });
+  }
+
+  const { page, perPage } = parsePaginationParams(req.query, defaultPerPage);
+  const skip = (page - 1) * perPage;
+
+  const { data, total } = await getAllUsersService(filter, perPage, skip);
+  const pagination = calculatePaginationData(total, perPage, page);
+
   res.json({
-    status: 'success',
+    status: '200',
     message: 'Users fetched successfully',
-    data: users,
+    data,
+    pagination,
   });
 });
 
 export const getUserById = asyncHandler(async (req, res) => {
   const user = await getUserByIdService(req.params.id);
   res.json({
-    status: 'success',
+    status: '200',
     message: 'User fetched successfully',
     data: user,
   });
@@ -43,7 +64,7 @@ export const getUserById = asyncHandler(async (req, res) => {
 export const getSavedArticles = asyncHandler(async (req, res) => {
   const saved = await getSavedArticlesService(req.user.id);
   res.json({
-    status: 'success',
+    status: '200',
     message: 'Saved articles fetched successfully',
     data: saved,
   });
@@ -52,7 +73,7 @@ export const getSavedArticles = asyncHandler(async (req, res) => {
 export const getCreatedArticles = asyncHandler(async (req, res) => {
   const created = await getCreatedArticlesService(req.user.id);
   res.json({
-    status: 'success',
+    status: '200',
     message: 'Created articles fetched successfully',
     data: created,
   });
@@ -61,7 +82,7 @@ export const getCreatedArticles = asyncHandler(async (req, res) => {
 export const saveArticle = asyncHandler(async (req, res) => {
   const saved = await saveArticleService(req.user.id, req.params.articleId);
   res.json({
-    status: 'success',
+    status: '200',
     message: 'Article saved successfully',
     data: saved,
   });
@@ -73,7 +94,7 @@ export const removeSavedArticle = asyncHandler(async (req, res) => {
     req.params.articleId,
   );
   res.json({
-    status: 'success',
+    status: '200',
     message: 'Article removed from saved list',
     data: updated,
   });
@@ -93,7 +114,7 @@ export const updatedUserAvatar = async (req, res) => {
   );
 
   res.json({
-    status: 'success',
+    status: '200',
     message: 'User updated successfully',
     data: clearTokens(newUser),
   });
@@ -115,7 +136,7 @@ export const updateUserInfo = async (req, res) => {
   const info = req.body;
   const newUser = await updateUserInfoService(req.user.id, info);
   res.json({
-    status: 'success',
+    status: '200',
     message: 'User updated successfully',
     data: clearTokens(newUser),
   });

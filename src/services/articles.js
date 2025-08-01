@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import { ArticlesCollection } from '../db/models/article.js';
 import { UserCollection } from '../db/models/user.js';
+import { sanitizeText } from '../utils/sanitizer.js';
 
 export const getAllArticles = async (
   filter,
@@ -8,6 +9,8 @@ export const getAllArticles = async (
   skip = null,
   ownerId = null,
 ) => {
+  limit = limit !== null ? parseInt(limit, 10) : null;
+  skip = skip !== null ? parseInt(skip, 10) : null;
   const query = {};
   let sort = {};
   if (filter === 'popular') {
@@ -43,8 +46,13 @@ export const getArticleById = async (articleId) => {
   return article;
 };
 export const createArticle = async (payload, userId, name) => {
-  const article = await ArticlesCollection.create({
+  const sanitizedData = {
     ...payload,
+    article: sanitizeText(payload.article),
+    title: sanitizeText(payload.title),
+  };
+  const article = await ArticlesCollection.create({
+    ...sanitizedData,
     ownerId: userId,
     ownerName: name,
   });
@@ -55,9 +63,14 @@ export const createArticle = async (payload, userId, name) => {
 };
 
 export const patchArticle = async (articleId, payload) => {
+  const sanitizedData = {
+    ...payload,
+    ...(payload.article && { article: sanitizeText(payload.article) }),
+    ...(payload.title && { title: sanitizeText(payload.title) }),
+  };
   const updatedArticle = await ArticlesCollection.findByIdAndUpdate(
     articleId,
-    payload,
+    sanitizedData,
     { new: true },
   );
   if (!updatedArticle) {

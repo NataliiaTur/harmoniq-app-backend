@@ -7,38 +7,39 @@ import {
   getArticlesByOwnerId,
 } from '../services/articles.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 export const getArticlesController = async (req, res) => {
-  const { filter = 'all', limit, page, ownerId } = req.query;
+  const { filter = 'all', ownerId } = req.query;
+  const paginationEnabled = 'page' in req.query;
+  const defaultPerPage = 12;
 
-  const shouldPaginate = limit !== undefined && page !== undefined;
-
-  if (shouldPaginate) {
-    const limitNum = Number(limit);
-    const pageNum = Number(page);
-    const skip = (pageNum - 1) * limitNum;
-
-    const { data, total } = await getAllArticles(
-      filter,
-      limitNum,
-      skip,
-      ownerId,
-    );
+  if (!paginationEnabled) {
+    const limit = parseInt(req.query.limit, 10);
+    const { data } = await getAllArticles(filter, limit, null, ownerId);
 
     return res.json({
       status: 200,
-      message: 'Successfully found paginated articles!',
+      message: 'Successfully found articles!',
       data,
-      total,
     });
   }
 
-  const { data } = await getAllArticles(filter, limit, null, ownerId);
+  const { page, perPage: limit } = parsePaginationParams(
+    req.query,
+    defaultPerPage,
+  );
+  const skip = (page - 1) * limit;
+
+  const { data, total } = await getAllArticles(filter, limit, skip, ownerId);
+  const pagination = calculatePaginationData(total, limit, page);
 
   return res.json({
     status: 200,
-    message: 'Successfully found articles!',
+    message: 'Successfully found paginated articles!',
     data,
+    pagination,
   });
 };
 

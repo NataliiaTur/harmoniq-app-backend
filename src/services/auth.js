@@ -8,6 +8,7 @@ import {
   generateRefreshToken,
 } from '../utils/token.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { sanitizeText } from '../utils/sanitizer.js';
 
 export const hashPassword = async (password) => {
   return await bcrypt.hash(password, 10);
@@ -35,7 +36,7 @@ export const registerUser = async ({ name, email, password }, avatarFile) => {
   if (avatarFile) {
     avatarURL = await saveFileToCloudinary(avatarFile);
   }
-
+  name = sanitizeText(name);
   const newUser = await UserCollection.create({
     name,
     email,

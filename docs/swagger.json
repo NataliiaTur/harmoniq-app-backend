@@ -207,10 +207,10 @@
         "tags": [
           "Articles"
         ],
-        "summary": "Get a list of articles (with optional filters)",
+        "summary": "Get a list of articles (with optional filters and pagination)",
         "operationId": "getArticles",
         "security": [],
-        "description": "Returns a list of articles from the database.\nOptional query parameters allow filtering, sorting, and limiting results.\n\n### Article fields:\n- **img** (optional): URL to the article's image.\n- **title** (required): Title of the article.\n- **article** (required): Full content of the article.\n- **ownerId** (required): The ID of the user who created the article.\n- **rate** (optional): A numeric rating value (default is 0).\n- **createdAt** / **updatedAt**: Timestamps for creation and update.\n\n### Optional Query Parameters:\n- `filter=popular`: Returns articles sorted by descending rating.\n- `limit=4`: Limits the number of returned articles.\n- `ownerId=<userId>`: Returns only articles created by a specific user.\n\n**Example use cases:**\n- Show top 4 popular articles on the home page:\n  `/api/articles?filter=popular&limit=4`\n- Show all articles of a specific author:\n  `/api/articles?ownerId=64f3...`\n- Show all articles (default):\n  `/api/articles`\n\nThis endpoint does **not** require authentication.\n",
+        "description": "Returns a list of articles from the database. Supports optional query parameters for filtering, pagination, and limiting results.\n\n### Article fields:\n- **img** (optional): URL to the article's image.\n- **title** (required): Title of the article.\n- **article** (required): Full content of the article.\n- **ownerId** (required): The ID of the user who created the article.\n- **rate** (optional): A numeric rating value (default is 0).\n- **createdAt** / **updatedAt**: Timestamps for creation and update.\n\n### Optional Query Parameters:\n- `filter=popular`: Returns articles sorted by descending rating.\n- `limit=4`: Limit the number of returned articles (useful without pagination).\n- `ownerId=<userId>`: Filter articles by specific user.\n- `page=<number>`: Page number for pagination (starts from 1).\n- `perPage=<number>`: Number of articles per page (default is 12 if not provided).\n\n### Behavior:\n- If `page` or `perPage` is provided, paginated response is returned with metadata.\n- If no pagination is requested, all matching articles are returned up to the optional `limit`.\n\n### Example use cases:\n- Show top 4 popular articles:\n  `/api/articles?filter=popular&limit=4`\n- Paginated list of all articles:\n  `/api/articles?page=2&perPage=10`\n- All articles by author:\n  `/api/articles?ownerId=64f3...`\n\nThis endpoint does **not** require authentication.\n",
         "parameters": [
           {
             "in": "query",
@@ -221,7 +221,7 @@
                 "popular"
               ]
             },
-            "description": "Apply special filtering, e.g., `popular` for top-rated articles."
+            "description": "Filter for special cases. `popular` for top-rated articles."
           },
           {
             "in": "query",
@@ -230,7 +230,7 @@
               "type": "integer",
               "minimum": 1
             },
-            "description": "Limit the number of returned articles."
+            "description": "Limit the number of articles (used without pagination)."
           },
           {
             "in": "query",
@@ -238,12 +238,30 @@
             "schema": {
               "type": "string"
             },
-            "description": "Filter articles by owner (user) ID."
+            "description": "Return only articles by the specified user."
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Page number (for paginated results)."
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Number of articles per page (default is 12)."
           }
         ],
         "responses": {
           "200": {
-            "description": "A list of articles matching the query",
+            "description": "A list of articles or a paginated response",
             "content": {
               "application/json": {
                 "schema": {
@@ -255,12 +273,41 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Articles fetched successfully"
+                      "example": "Successfully found paginated articles!"
                     },
                     "data": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Article"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 2
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 12
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "example": 47
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 4
+                        },
+                        "hasNextPage": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "hasPreviousPage": {
+                          "type": "boolean",
+                          "example": true
+                        }
                       }
                     }
                   }
@@ -843,9 +890,9 @@
         "tags": [
           "Users"
         ],
-        "summary": "Get a list of all article authors (with optional filters)",
+        "summary": "Get a list of all article authors (with optional filters and pagination)",
         "operationId": "getAllUsers",
-        "description": "Returns a list of users who have authored articles on the site.\n\nOptionally supports filtering and limiting results via query parameters.\n\n### Optional query parameters:\n- **filter=popular** — return users sorted by the number of created articles in descending order\n- **limit=number** — limit the number of returned users (e.g. `limit=6`)\n\n### Use cases:\n- Display list of top authors on the homepage (e.g. \"Top Creators\" section)\n- Show author info in filters or navigation\n- Paginate or preview the full author list\n",
+        "description": "Returns a list of users who have authored articles on the site.\n\nSupports filtering, limiting, and optional pagination via query parameters.\n\n### Optional query parameters:\n- **filter=popular** — return users sorted by the number of created articles in descending order.\n- **limit=number** — limit the number of returned users (e.g. `limit=6`).\n  If pagination is not used, this limit still applies.\n- **page=number** — used for pagination (e.g. `page=2`).\n- **perPage=number** — number of users per page (default is `20`).\n\n### Example use cases:\n- Show top 6 authors: `/api/users?filter=popular&limit=6`\n- Paginate full author list: `/api/users?page=2&perPage=10`\n- Get all authors sorted by popularity (default limit 20): `/api/users?filter=popular`\n\nThis endpoint does **not** require authentication.\n",
         "security": [],
         "parameters": [
           {
@@ -858,7 +905,7 @@
               ]
             },
             "required": false,
-            "description": "Optional filter to sort users by number of articles (use `top`)"
+            "description": "Sort users by number of articles in descending order."
           },
           {
             "in": "query",
@@ -868,7 +915,27 @@
               "minimum": 1
             },
             "required": false,
-            "description": "Optional limit on the number of users returned"
+            "description": "Limit the number of users returned. Works with or without pagination."
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "required": false,
+            "description": "Page number (for pagination)."
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "required": false,
+            "description": "Number of users per page (default is 20, for pagination)."
           }
         ],
         "responses": {
@@ -891,6 +958,36 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/UserPublic_User"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "example": 86
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "example": 5
+                        },
+                        "hasNextPage": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "hasPreviousPage": {
+                          "type": "boolean",
+                          "example": false
+                        }
                       }
                     }
                   }

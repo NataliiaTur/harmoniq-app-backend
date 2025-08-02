@@ -8,6 +8,10 @@ import {
   removeSavedArticleService,
   updateUserInfoService,
   currentUserService,
+  followService,
+  unfollowService,
+  getFollowersService,
+  getFollowingService,
 } from '../services/users.js';
 
 import { UserCollection } from '../db/models/user.js';
@@ -141,3 +145,37 @@ export const updateUserInfo = async (req, res) => {
     data: clearTokens(newUser),
   });
 };
+
+export const followUser = asyncHandler(async (req, res) => {
+  await followService(req);
+  res.json({
+    status: '200',
+    message: 'Followed successfully',
+  });
+});
+
+export const unfollowUser = asyncHandler(async (req, res) => {
+  await unfollowService(req);
+  res.json({
+    status: '200',
+    message: 'Unfollowed successfully',
+  });
+});
+
+export const getFollowers = asyncHandler(async (req, res) => {
+  const response = await getFollowersService(req);
+  res.json({
+    status: '200',
+    message: 'Followers list',
+    data: response,
+  });
+});
+
+export const getFollowing = asyncHandler(async (req, res) => {
+  const response = await getFollowingService(req);
+  res.json({
+    status: '200',
+    message: 'Follows list',
+    data: response,
+  });
+});

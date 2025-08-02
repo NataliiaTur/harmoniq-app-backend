@@ -2,6 +2,10 @@ import { Router } from 'express';
 import {
   getUserById,
   getSavedArticles,
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing,
 } from '../controllers/userControllers.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import {
@@ -59,5 +63,17 @@ router.patch(
   validateBody(userUpdateInfoSchema),
   ctrlWrapper(updateUserInfo),
 );
+
+router.patch('/follow/:targetUserId', authenticate, ctrlWrapper(followUser));
+
+router.patch(
+  '/unfollow/:targetUserId',
+  authenticate,
+  ctrlWrapper(unfollowUser),
+);
+
+router.get('/followers/:userId', authenticate, ctrlWrapper(getFollowers));
+
+router.get('/following/:userId', authenticate, ctrlWrapper(getFollowing));
 
 export default router;

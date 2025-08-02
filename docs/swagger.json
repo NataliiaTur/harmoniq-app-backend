@@ -1202,6 +1202,237 @@
           }
         }
       }
+    },
+    "/users/follow/{targetUserId}": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Follow another user",
+        "operationId": "followUser",
+        "description": "Authenticated user follows another user by their ID.\n\n❗ You cannot subscribe to yourself or re-subscribe to the same user.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "targetUserId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the user to follow"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Follow action completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Followed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound_NotFound"
+          }
+        }
+      }
+    },
+    "/users/unfollow/{targetUserId}": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Unfollow a user",
+        "operationId": "unfollowUser",
+        "description": "Allows an authenticated user to unfollow another user by their ID.\n\n❗ If the user is not subscribed to the target, the request passes without error, just without changes.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "targetUserId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the user to unfollow"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unfollow successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unfollowed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound_NotFound"
+          }
+        }
+      }
+    },
+    "/users/followers/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get followers of a user",
+        "operationId": "getFollowers",
+        "description": "Returns a list of users who follow the specified user.\n\nUseful for an author's profile to show their audience.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user whose followers to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Followers list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserPublic_User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound_NotFound"
+          }
+        }
+      }
+    },
+    "/users/following/{userId}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get following list of a user",
+        "operationId": "getFollowing",
+        "description": "Returns a list of users whom the specified user is following.\n\nFor example, you can display who a user is reading on their profile.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user whose followings to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of followings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Followings list"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserPublic_User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound_NotFound"
+          }
+        }
+      }
     }
   },
   "components": {

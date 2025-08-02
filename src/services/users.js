@@ -124,3 +124,69 @@ export const currentUserService = async (userId) => {
   if (!user) throw createError(404, 'User not found');
   return user;
 };
+
+export const followService = async (req) => {
+  const { targetUserId } = req.params;
+  const currentUserId = req.user.id;
+
+  if (currentUserId === targetUserId) {
+    throw createError(400, "You can't follow yourself");
+  }
+
+  const targetUser = await UserCollection.findById(targetUserId);
+  const currentUser = await UserCollection.findById(currentUserId);
+
+  if (!targetUser || !currentUser) {
+    throw createError(404, 'User not found');
+  }
+
+  if (currentUser.following.includes(targetUserId)) {
+    throw createError(400, 'Already following this user');
+  }
+
+  currentUser.following.push(targetUserId);
+  targetUser.followers.push(currentUserId);
+
+  await currentUser.save({ validateBeforeSave: false });
+  await targetUser.save({ validateBeforeSave: false });
+};
+
+export const unfollowService = async (req) => {
+  const { targetUserId } = req.params;
+  const currentUserId = req.user.id;
+
+  const targetUser = await UserCollection.findById(targetUserId);
+  const currentUser = await UserCollection.findById(currentUserId);
+
+  if (!targetUser || !currentUser) {
+    throw createError(404, 'User not found');
+  }
+
+  currentUser.following = currentUser.following.filter(
+    (id) => id.toString() !== targetUserId,
+  );
+  targetUser.followers = targetUser.followers.filter(
+    (id) => id.toString() !== currentUserId,
+  );
+
+  await currentUser.save({ validateBeforeSave: false });
+  await targetUser.save({ validateBeforeSave: false });
+};
+
+export const getFollowersService = async (req) => {
+  const user = await UserCollection.findById(req.params.userId).populate(
+    'followers',
+    'name email avatar articlesAmount',
+  );
+  if (!user) throw createError(404, 'User not found');
+  return user.followers;
+};
+
+export const getFollowingService = async (req) => {
+  const user = await UserCollection.findById(req.params.userId).populate(
+    'following',
+    'name email avatar articlesAmount',
+  );
+  if (!user) throw createError(404, 'User not found');
+  return user.following;
+};

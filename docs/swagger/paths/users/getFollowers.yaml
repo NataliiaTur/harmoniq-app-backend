@@ -1,0 +1,42 @@
+getFollowers:
+  tags: [Users]
+  summary: Get followers of a user
+  operationId: getFollowers
+  description: |
+    Returns a list of users who follow the specified user.
+
+    Useful for an author's profile to show their audience.
+
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+      description: ID of the user whose followers to retrieve
+
+  responses:
+    '200':
+      description: List of followers
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Followers list
+              data:
+                type: array
+                items:
+                  $ref: '../../components/schemas/users/UserPublic.yaml#/User'
+
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      $ref: '../../components/responses/users/NotFound.yaml#/NotFound'

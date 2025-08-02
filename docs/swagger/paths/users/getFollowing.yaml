@@ -1,0 +1,42 @@
+getFollowing:
+  tags: [Users]
+  summary: Get following list of a user
+  operationId: getFollowing
+  description: |
+    Returns a list of users whom the specified user is following.
+
+    For example, you can display who a user is reading on their profile.
+
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+      description: ID of the user whose followings to retrieve
+
+  responses:
+    '200':
+      description: List of followings
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Followings list
+              data:
+                type: array
+                items:
+                  $ref: '../../components/schemas/users/UserPublic.yaml#/User'
+
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      $ref: '../../components/responses/users/NotFound.yaml#/NotFound'

@@ -100,6 +100,18 @@ paths:
   /users/info:
     patch:
       $ref: 'swagger/paths/users/updateInfo.yaml#/updateUserInfo'
+  /users/follow/{targetUserId}:
+    patch:
+      $ref: 'swagger/paths/users/follow.yaml#/follow'
+  /users/unfollow/{targetUserId}:
+    patch:
+      $ref: 'swagger/paths/users/unfollow.yaml#/unfollow'
+  /users/followers/{userId}:
+    get:
+      $ref: 'swagger/paths/users/getFollowers.yaml#/getFollowers'
+  /users/following/{userId}:
+    get:
+      $ref: 'swagger/paths/users/getFollowing.yaml#/getFollowing'
 
 components:
   schemas:

@@ -1,0 +1,43 @@
+follow:
+  tags: [Users]
+  summary: Follow another user
+  operationId: followUser
+  description: |
+    Authenticated user follows another user by their ID.
+
+    ❗ You cannot subscribe to yourself or re-subscribe to the same user.
+
+  security:
+    - bearerAuth: []
+
+  parameters:
+    - in: path
+      name: targetUserId
+      required: true
+      schema:
+        type: string
+      description: The ID of the user to follow
+
+  responses:
+    '200':
+      description: Follow action completed successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: Followed successfully
+
+    '400':
+      $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'
+
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+
+    '404':
+      $ref: '../../components/responses/users/NotFound.yaml#/NotFound'

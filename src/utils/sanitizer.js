@@ -11,7 +11,7 @@ const options = {
     strong: [],
     em: [],
     s: [],
-    a: ['href', 'target', 'rel'],
+    a: ['href', 'target', 'rel', 'tooltip'],
     span: ['style'],
   },
   css: {

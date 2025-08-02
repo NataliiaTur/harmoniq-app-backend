@@ -12,6 +12,7 @@ import {
   unfollowService,
   getFollowersService,
   getFollowingService,
+  deleteUserService,
 } from '../services/users.js';
 
 import { UserCollection } from '../db/models/user.js';
@@ -177,5 +178,14 @@ export const getFollowing = asyncHandler(async (req, res) => {
     status: '200',
     message: 'Follows list',
     data: response,
+  });
+});
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  await deleteUserService(req.user.id);
+
+  res.status(200).json({
+    status: 200,
+    message: 'User account deleted successfully',
   });
 });

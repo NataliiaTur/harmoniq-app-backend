@@ -190,3 +190,25 @@ export const getFollowingService = async (req) => {
   if (!user) throw createError(404, 'User not found');
   return user.following;
 };
+
+export const deleteUserService = async (userId) => {
+  const user = await UserCollection.findById(userId);
+
+  if (!user) {
+    throw createError(404, 'User not found');
+  }
+
+  await UserCollection.updateMany(
+    { followers: userId },
+    { $pull: { followers: userId } },
+  );
+
+  await UserCollection.updateMany(
+    { following: userId },
+    { $pull: { following: userId } },
+  );
+
+  await ArticlesCollection.deleteMany({ ownerId: userId });
+
+  await UserCollection.findByIdAndDelete(userId);
+};

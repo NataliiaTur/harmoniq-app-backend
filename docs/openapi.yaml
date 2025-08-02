@@ -83,6 +83,8 @@ paths:
   /users/current:
     get:
       $ref: 'swagger/paths/users/getCurrent.yaml#/getCurrentUser'
+    delete:
+      $ref: 'swagger/paths/users/delete.yaml#/deleteUser'
   /users/save/{articleId}:
     post:
       $ref: 'swagger/paths/users/saveArticle.yaml#/saveArticle'

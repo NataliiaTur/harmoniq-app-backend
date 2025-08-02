@@ -78,10 +78,14 @@ export const patchArticleController = async (req, res) => {
   if (photo) {
     photoUrl = await saveFileToCloudinary(photo);
   }
-  const result = await patchArticle(articleId, {
-    ...req.body,
-    img: photoUrl,
-  });
+  const result = await patchArticle(
+    articleId,
+    {
+      ...req.body,
+      img: photoUrl,
+    },
+    req.user.id,
+  );
   res.json({
     status: 200,
     message: 'Successfully patched an article',

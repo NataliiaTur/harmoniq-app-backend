@@ -198,21 +198,17 @@ export const deleteUserService = async (userId) => {
     throw createError(404, 'User not found');
   }
 
-  // 1. Видалити юзера зі списку "followers" інших користувачів
   await UserCollection.updateMany(
     { followers: userId },
     { $pull: { followers: userId } },
   );
 
-  // 2. Видалити юзера зі списку "following" інших користувачів
   await UserCollection.updateMany(
     { following: userId },
     { $pull: { following: userId } },
   );
 
-  // 3. (Опційно) Видалити всі статті користувача
   await ArticlesCollection.deleteMany({ ownerId: userId });
 
-  // 4. Видалити самого користувача
   await UserCollection.findByIdAndDelete(userId);
 };

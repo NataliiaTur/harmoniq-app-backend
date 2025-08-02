@@ -6,20 +6,18 @@ import {
   unfollowUser,
   getFollowers,
   getFollowing,
-} from '../controllers/userControllers.js';
-import { isValidId } from '../middlewares/isValidId.js';
-import {
   getCreatedArticles,
   saveArticle,
   removeSavedArticle,
+  getAllUsers,
+  getCurrentUserController,
+  updatedUserAvatar,
+  updateUserInfo,
+  deleteUser,
 } from '../controllers/userControllers.js';
-import { getAllUsers } from '../controllers/userControllers.js';
+import { isValidId, isValidArticleId } from '../middlewares/isValidId.js';
 import { authenticate } from '../middlewares/authenticate.js';
-import { isValidArticleId } from '../middlewares/isValidId.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { getCurrentUserController } from '../controllers/userControllers.js';
-import { updatedUserAvatar } from '../controllers/userControllers.js';
-import { updateUserInfo } from '../controllers/userControllers.js';
 import { upload } from '../middlewares/multer.js';
 import { userUpdateInfoSchema } from '../validation/userValidation.js';
 import { validateBody } from '../middlewares/validateBody.js';
@@ -75,5 +73,7 @@ router.patch(
 router.get('/followers/:userId', authenticate, ctrlWrapper(getFollowers));
 
 router.get('/following/:userId', authenticate, ctrlWrapper(getFollowing));
+
+router.delete('/current', authenticate, ctrlWrapper(deleteUser));
 
 export default router;

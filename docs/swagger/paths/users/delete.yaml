@@ -1,0 +1,43 @@
+deleteUser:
+  tags: [Users]
+  summary: Delete the current user's account along with all associated relationships
+  operationId: deleteUserAccount
+  description: |
+    Deletes the currently authenticated user's account from the system.
+
+    This operation performs the following steps:
+    - Removes the user from all **followers** and **following** relationships across the platform
+    - Deletes all **articles** authored by the user (optional behavior, can be adjusted)
+    - Deletes the user record from the database
+
+    This action is irreversible. The user will need to re-register to use the platform again.
+
+    ### Authorization:
+    - Requires a valid **Bearer token**
+
+    ### Use cases:
+    - A user decides to permanently delete their account
+    - Cleanup of inactive or unwanted accounts initiated by the user
+
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: User account deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              message:
+                type: string
+                example: User account deleted successfully
+    '401':
+      $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'
+    '404':
+      $ref: '../../components/responses/users/NotFound.yaml#/NotFound'
+    '500':
+      description: Internal server error

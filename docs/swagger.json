@@ -754,6 +754,50 @@
             "description": "Internal server error"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete the current user's account along with all associated relationships",
+        "operationId": "deleteUserAccount",
+        "description": "Deletes the currently authenticated user's account from the system.\n\nThis operation performs the following steps:\n- Removes the user from all **followers** and **following** relationships across the platform\n- Deletes all **articles** authored by the user (optional behavior, can be adjusted)\n- Deletes the user record from the database\n\nThis action is irreversible. The user will need to re-register to use the platform again.\n\n### Authorization:\n- Requires a valid **Bearer token**\n\n### Use cases:\n- A user decides to permanently delete their account\n- Cleanup of inactive or unwanted accounts initiated by the user\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User account deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User account deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound_NotFound"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
       }
     },
     "/users/save/{articleId}": {

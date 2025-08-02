@@ -62,7 +62,17 @@ export const createArticle = async (payload, userId, name) => {
   return article;
 };
 
-export const patchArticle = async (articleId, payload) => {
+export const patchArticle = async (articleId, payload, currentUserId) => {
+const article = await ArticlesCollection.findById(articleId);
+
+  if (!article) {
+    throw createHttpError(404, 'Article not found');
+  }
+
+  if (article.ownerId.toString() !== currentUserId) {
+    throw createHttpError(403, 'You are not allowed to edit this article');
+  }
+
   const sanitizedData = {
     ...payload,
     ...(payload.article && { article: sanitizeText(payload.article) }),

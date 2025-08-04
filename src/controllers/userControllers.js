@@ -148,18 +148,20 @@ export const updateUserInfo = async (req, res) => {
 };
 
 export const followUser = asyncHandler(async (req, res) => {
-  await followService(req);
+  const response = await followService(req);
   res.json({
     status: '200',
     message: 'Followed successfully',
+    data: response,
   });
 });
 
 export const unfollowUser = asyncHandler(async (req, res) => {
-  await unfollowService(req);
+  const response = await unfollowService(req);
   res.json({
     status: '200',
     message: 'Unfollowed successfully',
+    data: response,
   });
 });
 

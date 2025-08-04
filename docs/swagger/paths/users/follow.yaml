@@ -7,6 +7,8 @@ follow:
 
     ❗ You cannot subscribe to yourself or re-subscribe to the same user.
 
+    Returns the updated list of users the current user is following.
+
   security:
     - bearerAuth: []
 
@@ -32,6 +34,11 @@ follow:
               message:
                 type: string
                 example: Followed successfully
+              data:
+                type: array
+                description: List of users the current user is now following
+                items:
+                  $ref: '../../components/schemas/users/UserPublic.yaml#/User'
 
     '400':
       $ref: '../../components/responses/auth/BadRequest.yaml#/BadRequest'

@@ -13,6 +13,16 @@ const recalculateArticleRate = async (articleId) => {
   });
 };
 
+const findUser = async (selector, id) => {
+  const user = await UserCollection.findById(id)
+    .select(selector)
+    .populate(selector, 'name email avatar articlesAmount');
+
+  if (!user) throw createError(404, 'User not found');
+
+  return user[selector];
+};
+
 export const getAllUsersService = async (filter, limit = null, skip = null) => {
   const query = {};
   let sort = {};
@@ -149,6 +159,8 @@ export const followService = async (req) => {
 
   await currentUser.save({ validateBeforeSave: false });
   await targetUser.save({ validateBeforeSave: false });
+  const user = await findUser('following', currentUser.id);
+  return user;
 };
 
 export const unfollowService = async (req) => {
@@ -171,24 +183,20 @@ export const unfollowService = async (req) => {
 
   await currentUser.save({ validateBeforeSave: false });
   await targetUser.save({ validateBeforeSave: false });
+  const user = await findUser('following', currentUser.id);
+  return user;
 };
 
 export const getFollowersService = async (req) => {
-  const user = await UserCollection.findById(req.params.userId).populate(
-    'followers',
-    'name email avatar articlesAmount',
-  );
+  const user = await findUser('followers', req.params.userId);
   if (!user) throw createError(404, 'User not found');
   return user.followers;
 };
 
 export const getFollowingService = async (req) => {
-  const user = await UserCollection.findById(req.params.userId).populate(
-    'following',
-    'name email avatar articlesAmount',
-  );
+  const user = await findUser('following', req.params.userId);
   if (!user) throw createError(404, 'User not found');
-  return user.following;
+  return user;
 };
 
 export const deleteUserService = async (userId) => {

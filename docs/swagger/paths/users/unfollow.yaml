@@ -7,6 +7,8 @@ unfollow:
 
     ❗ If the user is not subscribed to the target, the request passes without error, just without changes.
 
+    Returns the updated list of users the current user is following.
+
   security:
     - bearerAuth: []
 
@@ -32,6 +34,11 @@ unfollow:
               message:
                 type: string
                 example: Unfollowed successfully
+              data:
+                type: array
+                description: List of users the current user is now following
+                items:
+                  $ref: '../../components/schemas/users/UserPublic.yaml#/User'
 
     '401':
       $ref: '../../components/responses/auth/Unauthorized.yaml#/Unauthorized'

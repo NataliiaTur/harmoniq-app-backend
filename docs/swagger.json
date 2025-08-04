@@ -1254,7 +1254,7 @@
         ],
         "summary": "Follow another user",
         "operationId": "followUser",
-        "description": "Authenticated user follows another user by their ID.\n\n❗ You cannot subscribe to yourself or re-subscribe to the same user.\n",
+        "description": "Authenticated user follows another user by their ID.\n\n❗ You cannot subscribe to yourself or re-subscribe to the same user.\n\nReturns the updated list of users the current user is following.\n",
         "security": [
           {
             "bearerAuth": []
@@ -1286,6 +1286,13 @@
                     "message": {
                       "type": "string",
                       "example": "Followed successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of users the current user is now following",
+                      "items": {
+                        "$ref": "#/components/schemas/UserPublic_User"
+                      }
                     }
                   }
                 }
@@ -1311,7 +1318,7 @@
         ],
         "summary": "Unfollow a user",
         "operationId": "unfollowUser",
-        "description": "Allows an authenticated user to unfollow another user by their ID.\n\n❗ If the user is not subscribed to the target, the request passes without error, just without changes.\n",
+        "description": "Allows an authenticated user to unfollow another user by their ID.\n\n❗ If the user is not subscribed to the target, the request passes without error, just without changes.\n\nReturns the updated list of users the current user is following.\n",
         "security": [
           {
             "bearerAuth": []
@@ -1343,6 +1350,13 @@
                     "message": {
                       "type": "string",
                       "example": "Unfollowed successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of users the current user is now following",
+                      "items": {
+                        "$ref": "#/components/schemas/UserPublic_User"
+                      }
                     }
                   }
                 }

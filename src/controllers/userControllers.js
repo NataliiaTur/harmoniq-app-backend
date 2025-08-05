@@ -15,8 +15,8 @@ import {
   deleteUserService,
 } from '../services/users.js';
 
-import { UserCollection } from '../db/models/user.js';
-import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+// import { UserCollection } from '../db/models/user.js';
+// import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
@@ -105,26 +105,6 @@ export const removeSavedArticle = asyncHandler(async (req, res) => {
   });
 });
 
-export const updatedUserAvatar = async (req, res) => {
-  const avatar = req.file;
-  let avatarURL = '';
-
-  if (avatar) {
-    avatarURL = await saveFileToCloudinary(avatar);
-  }
-  const newUser = await UserCollection.findByIdAndUpdate(
-    req.user.id,
-    { avatar: avatarURL },
-    { new: true },
-  );
-
-  res.json({
-    status: '200',
-    message: 'User updated successfully',
-    data: clearTokens(newUser),
-  });
-};
-
 export const getCurrentUserController = async (req, res) => {
   const user = await currentUserService(req.user.id);
   const response = clearTokens(user);
@@ -139,7 +119,8 @@ export const getCurrentUserController = async (req, res) => {
 
 export const updateUserInfo = async (req, res) => {
   const info = req.body;
-  const newUser = await updateUserInfoService(req.user.id, info);
+  const file = req.file;
+  const newUser = await updateUserInfoService(req.user.id, info, file);
   res.json({
     status: '200',
     message: 'User updated successfully',

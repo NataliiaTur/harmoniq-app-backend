@@ -11,7 +11,7 @@ import {
   removeSavedArticle,
   getAllUsers,
   getCurrentUserController,
-  updatedUserAvatar,
+  // updatedUserAvatar,
   updateUserInfo,
   deleteUser,
 } from '../controllers/userControllers.js';
@@ -49,15 +49,9 @@ router.get('/', ctrlWrapper(getAllUsers));
 router.get('/:id', isValidId, ctrlWrapper(getUserById));
 
 router.patch(
-  '/avatar',
-  authenticate,
-  upload.single('avatar'),
-  ctrlWrapper(updatedUserAvatar),
-);
-
-router.patch(
   '/info',
   authenticate,
+  upload.single('avatar'),
   validateBody(userUpdateInfoSchema),
   ctrlWrapper(updateUserInfo),
 );

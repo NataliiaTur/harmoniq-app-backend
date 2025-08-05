@@ -14,7 +14,6 @@ export const getAllArticles = async (
   const query = {};
   let sort = {};
   if (filter === 'popular') {
-    query.rate = { $gt: 0 };
     sort = { rate: -1 };
   }
 
@@ -63,7 +62,7 @@ export const createArticle = async (payload, userId, name) => {
 };
 
 export const patchArticle = async (articleId, payload, currentUserId) => {
-const article = await ArticlesCollection.findById(articleId);
+  const article = await ArticlesCollection.findById(articleId);
 
   if (!article) {
     throw createHttpError(404, 'Article not found');

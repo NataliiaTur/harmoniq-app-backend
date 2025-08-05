@@ -3,11 +3,11 @@ updateUserInfo:
   summary: Update user's personal information
   operationId: updateUserInfo
   description: |
-    Allows the authenticated user to update their profile information such as name and email.
+    Allows the authenticated user to update their profile information such as name, email, and avatar.
 
     ### Requirements:
     - **Authentication**: Required via Bearer Token
-    - Both `name` and `email` are optional, but at least one must be provided
+    - All fields are **required**: `name`, `email`, and `avatar`
 
     ### Validation:
     - **Name**:
@@ -16,19 +16,26 @@ updateUserInfo:
     - **Email**:
       - Must be a valid email address
       - Maximum 64 characters
+    - **Avatar**:
+      - Must be an image file (e.g., jpg, png)
+      - Recommended max size: 1MB
 
     ### Behavior:
-    - If both fields are missing, validation middleware should reject the request
-    - Updates only the fields provided in the request body
+    - If none of the fields are provided, validation middleware should reject the request
+    - Only provided fields will be updated
 
   security:
     - bearerAuth: []
   requestBody:
     required: true
     content:
-      application/json:
+      multipart/form-data:
         schema:
           type: object
+          required:
+            - name
+            - email
+            - avatar
           properties:
             name:
               type: string
@@ -40,6 +47,10 @@ updateUserInfo:
               format: email
               maxLength: 64
               example: jane@example.com
+            avatar:
+              type: string
+              format: binary
+              description: User avatar image (jpg, png)
 
   responses:
     '200':

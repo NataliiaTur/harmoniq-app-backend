@@ -111,20 +111,15 @@ export const removeSavedArticleService = async (userId, articleId) => {
   return user.savedArticles;
 };
 
-export const updateUserPhotoService = async (userId, file) => {
-  const user = await UserCollection.findById(userId);
-  if (!user) throw createError(404, 'User not found');
-  const avatarURL = await saveFileToCloudinary(file);
-  user.avatar = avatarURL;
-  await user.save();
-  return user;
-};
-
-export const updateUserInfoService = async (userId, info) => {
+export const updateUserInfoService = async (userId, info, file) => {
   const user = await UserCollection.findById(userId);
   if (!user) throw createError(404, 'User not found');
   if (info.name) user.name = sanitizeText(info.name);
   if (info.email) user.email = info.email.trim();
+  if (file) {
+    const avatarURL = await saveFileToCloudinary(file);
+    user.avatar = avatarURL;
+  }
   await user.save();
   return user;
 };

@@ -11,9 +11,3 @@ export const userUpdateInfoSchema = Joi.object({
     'string.max': 'Email must be at most 64 characters',
   }),
 });
-
-export const userAvatarSchema = Joi.object({
-  avatar: Joi.any()
-    .meta({ swaggerType: 'file' })
-    .description('User avatar image'),
-});

@@ -1102,14 +1102,14 @@
         }
       }
     },
-    "/users/avatar": {
+    "/users/info": {
       "patch": {
         "tags": [
           "Users"
         ],
-        "summary": "Update user's avatar",
-        "operationId": "updateUserAvatar",
-        "description": "Updates the authenticated user's avatar image.\n\nThis endpoint allows a user to upload a new avatar image. The image is uploaded to a cloud storage service, and the resulting URL is stored in the user's profile.\n\n### Requirements:\n- **Authentication**: Required via Bearer Token\n- **File format**: Must be an image (e.g., `.jpg`, `.png`)\n- **Max file size**: 1MB (enforced at middleware or storage level)\n- The previous avatar (if any) is replaced by the new one\n\n### Behavior:\n- If no file is provided, avatar will remain unchanged\n- Responds with the updated user object, including the new avatar URL\n",
+        "summary": "Update user's personal information",
+        "operationId": "updateUserInfo",
+        "description": "Allows the authenticated user to update their profile information such as name, email, and avatar.\n\n### Requirements:\n- **Authentication**: Required via Bearer Token\n- All fields are **required**: `name`, `email`, and `avatar`\n\n### Validation:\n- **Name**:\n  - Must be a string\n  - 2–32 characters\n- **Email**:\n  - Must be a valid email address\n  - Maximum 64 characters\n- **Avatar**:\n  - Must be an image file (e.g., jpg, png)\n  - Recommended max size: 1MB\n\n### Behavior:\n- If none of the fields are provided, validation middleware should reject the request\n- Only provided fields will be updated\n",
         "security": [
           {
             "bearerAuth": []
@@ -1122,74 +1122,10 @@
               "schema": {
                 "type": "object",
                 "required": [
+                  "name",
+                  "email",
                   "avatar"
                 ],
-                "properties": {
-                  "avatar": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Image file (max 1MB)"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User avatar updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "User updated successfully"
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/UserPublic_User"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/Invalid"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/users/info": {
-      "patch": {
-        "tags": [
-          "Users"
-        ],
-        "summary": "Update user's personal information",
-        "operationId": "updateUserInfo",
-        "description": "Allows the authenticated user to update their profile information such as name and email.\n\n### Requirements:\n- **Authentication**: Required via Bearer Token\n- Both `name` and `email` are optional, but at least one must be provided\n\n### Validation:\n- **Name**:\n  - Must be a string\n  - 2–32 characters\n- **Email**:\n  - Must be a valid email address\n  - Maximum 64 characters\n\n### Behavior:\n- If both fields are missing, validation middleware should reject the request\n- Updates only the fields provided in the request body\n",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1202,6 +1138,11 @@
                     "format": "email",
                     "maxLength": 64,
                     "example": "jane@example.com"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "User avatar image (jpg, png)"
                   }
                 }
               }
@@ -1908,26 +1849,6 @@
                 "message": {
                   "type": "string",
                   "example": "User not found"
-                }
-              }
-            }
-          }
-        }
-      },
-      "Invalid": {
-        "description": "Invalid file format or missing file",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 400
-                },
-                "message": {
-                  "type": "string",
-                  "example": "No file provided or invalid format"
                 }
               }
             }

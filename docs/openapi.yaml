@@ -96,9 +96,6 @@ paths:
   /users/{id}:
     get:
       $ref: 'swagger/paths/users/getById.yaml#/getUserById'
-  /users/avatar:
-    patch:
-      $ref: 'swagger/paths/users/updateAvatar.yaml#/updateUserAvatar'
   /users/info:
     patch:
       $ref: 'swagger/paths/users/updateInfo.yaml#/updateUserInfo'

@@ -4,8 +4,7 @@ import { ArticlesCollection } from './src/db/models/article.js';
 import { UserCollection } from './src/db/models/user.js';
 
 dotenv.config();
-
-const MONGO_URI = process.env.MONGO_URI; // твій рядок підключення до Mongo
+const MONGO_URI = process.env.MONGO_URI;
 
 const fixOwnerIds = async () => {
   try {
@@ -15,11 +14,14 @@ const fixOwnerIds = async () => {
     const articles = await ArticlesCollection.find();
 
     for (const article of articles) {
-      // якщо ownerId вже ObjectId, пропускаємо
-      if (Types.ObjectId.isValid(article.ownerId)) continue;
+      // Якщо ownerId вже ObjectId — пропускаємо
+      if (Types.ObjectId.isValid(article.ownerId) && typeof article.ownerId !== 'string') continue;
 
-      // шукаємо користувача по старому рядковому id
-      const user = await UserCollection.findOne({ id: article.ownerId });
+      let user;
+      // Якщо ownerId рядок (старий id)
+      if (typeof article.ownerId === 'string') {
+        user = await UserCollection.findOne({ id: article.ownerId });
+      }
 
       if (!user) {
         console.log(`User not found for article ${article._id}, ownerId: ${article.ownerId}`);

@@ -33,4 +33,4 @@ const articleSchema = new Schema(
   },
 );
 
-export const ArticlesCollection = model('Article', articleSchema);
+export const ArticlesCollection = model('Article', articleSchema, "harmoniq-articles");

@@ -28,9 +28,10 @@ const articleSchema = new Schema(
     },
   },
   {
+    collection: 'harmoniq-articles',
     timestamps: true,
     versionKey: false,
   },
 );
 
-export const ArticlesCollection = model('Article', articleSchema, "harmoniq-articles");
+export const ArticlesCollection = model('Article', articleSchema);

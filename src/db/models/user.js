@@ -55,6 +55,7 @@ const userSchema = new Schema(
     ],
   },
   {
+    collection: 'harmoniq-users',
     timestamps: true,
     versionKey: false,
   },
@@ -66,4 +67,4 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-export const UserCollection = model('User', userSchema, "harmoniq-users");
+export const UserCollection = model('User', userSchema);

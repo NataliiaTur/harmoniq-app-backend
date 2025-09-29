@@ -10,6 +10,7 @@ import { getEnvVar } from './utils/getEnvVar.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import analyticsRoutes from './routers/analyticsRoutes.js';
 
 const PORT = Number(getEnvVar('PORT', 3000));
 

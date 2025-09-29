@@ -22,7 +22,8 @@ export const startServer = () => {
 
   app.use(loggerPino);
 
-  app.use(router);
+  app.use('/api', router);
+  app.use('/api/analytics', analyticsRoutes);
 
   app.use('/api-docs', swaggerDocs());
 

@@ -64,7 +64,15 @@ export const loginUser = async ({ email, password }) => {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
-  user.refreshToken = refreshToken;
+  // ⭐ Додаємо новий токен до масиву
+  if (!user.refreshTokens) user.refreshTokens = [];
+  user.refreshTokens.push(refreshToken);
+
+  // Обмежуємо до 5 токенів (5 активних пристроїв)
+  if (user.refreshTokens.length > 5) {
+    user.refreshTokens = user.refreshTokens.slice(-5);
+  }
+
   user.accessToken = accessToken;
   await user.save();
 
@@ -85,14 +93,19 @@ export const refreshTokens = async (token) => {
   }
 
   const user = await UserCollection.findById(payload.id);
-  if (!user || user.refreshToken !== token) {
+
+  // ⭐ Перевіряємо чи токен є в масиві
+  if (!user || !user.refreshTokens?.includes(token)) {
     throw createHttpError(403, 'Invalid refresh token');
   }
 
   const newAccessToken = generateAccessToken({ id: user._id });
   const newRefreshToken = generateRefreshToken({ id: user._id });
 
-  user.refreshToken = newRefreshToken;
+  // ⭐ Замінюємо старий токен на новий в масиві
+  const tokenIndex = user.refreshTokens.indexOf(token);
+
+  user.refreshTokens[tokenIndex] = newRefreshToken;
   user.accessToken = newAccessToken;
   await user.save();
 
@@ -103,14 +116,21 @@ export const refreshTokens = async (token) => {
 };
 
 // logout
-export const logoutUser = async (userId) => {
+export const logoutUser = async (userId, refreshToken) => {
   const user = await UserCollection.findById(userId);
 
   if (!user) {
     throw createHttpError(404, 'User not found');
   }
 
-  user.refreshToken = '';
+  // ⭐ Видаляємо тільки цей конкретний токен
+  if (refreshToken) {
+    user.refreshTokens = user.refreshTokens.filter(t => t !== refreshToken);
+  } else {
+    // Або видаляємо всі токени (logout з усіх пристроїв)
+    user.refreshTokens = [];
+  }
+  
   user.accessToken = '';
   await user.save();
 };

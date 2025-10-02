@@ -22,9 +22,9 @@ export const startServer = () => {
 
   app.use(loggerPino);
 
-  app.use('/api', router);
   app.use('/api/analytics', analyticsRoutes);
-
+  app.use('/api', router);
+  
   app.use('/api-docs', swaggerDocs());
 
   app.use(notFoundHandler);

@@ -100,7 +100,7 @@ export const refreshTokens = async (token) => {
   let payload;
   try {
     payload = verifyRefreshToken(token);
-  } catch {
+  } catch (error) {
     console.error('❌ Token verification failed:', error.message);
     throw createHttpError(403, 'Non-valid refresh token');
   }
@@ -133,7 +133,7 @@ export const refreshTokens = async (token) => {
   await user.save();
 
   console.log('✅ Tokens refreshed successfully');
-  
+
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,

@@ -42,9 +42,13 @@ export const createSessionController = async (req, res) => {
 export const trackEventController = async (req, res) => {
   const { sessionId, type, data } = req.body;
 
+   // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
+  console.log('📊 Track event received:', { sessionId, type, data });
+
   const session = await UserSessionCollection.findOne({ sessionId });
 
   if (!session) {
+    console.error('❌ Session not found:', sessionId);
     return res.status(404).json({ message: 'Session not found' });
   }
 
@@ -65,6 +69,12 @@ export const trackEventController = async (req, res) => {
   }
 
   if (type === 'add_to_favorites' && data.articleId && data.authorId) {
+    // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
+    console.log('✅ Adding to favorites:', {
+      articleId: data.articleId,
+      authorId: data.authorId
+    });
+    
     session.addedToFavorites.push({
       articleId: data.articleId,
       authorId: data.authorId,

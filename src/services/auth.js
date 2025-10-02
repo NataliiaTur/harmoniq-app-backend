@@ -64,6 +64,12 @@ export const loginUser = async ({ email, password }) => {
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
+   // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
+  console.log('🔑 Before save:', {
+    oldTokens: user.refreshTokens,
+    newToken: refreshToken.substring(0, 20)
+  });
+
   // ⭐ Додаємо новий токен до масиву
   if (!user.refreshTokens) user.refreshTokens = [];
   user.refreshTokens.push(refreshToken);
@@ -75,6 +81,12 @@ export const loginUser = async ({ email, password }) => {
 
   user.accessToken = accessToken;
   await user.save();
+
+  // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
+  console.log('✅ After save:', {
+    tokensCount: user.refreshTokens.length,
+    tokens: user.refreshTokens.map(t => t.substring(0, 20))
+  });
 
   return user;
 };
@@ -89,10 +101,21 @@ export const refreshTokens = async (token) => {
   try {
     payload = verifyRefreshToken(token);
   } catch {
+    console.error('❌ Token verification failed:', error.message);
     throw createHttpError(403, 'Non-valid refresh token');
   }
 
   const user = await UserCollection.findById(payload.id);
+
+   // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
+  console.log('🔍 Refresh attempt:', {
+    userId: user?._id,
+    hasRefreshTokens: !!user?.refreshTokens,
+    tokensCount: user?.refreshTokens?.length,
+    tokenExists: user?.refreshTokens?.includes(token),
+    receivedToken: token.substring(0, 20),
+    storedTokens: user?.refreshTokens?.map(t => t.substring(0, 20))
+  });
 
   // ⭐ Перевіряємо чи токен є в масиві
   if (!user || !user.refreshTokens?.includes(token)) {
@@ -109,6 +132,8 @@ export const refreshTokens = async (token) => {
   user.accessToken = newAccessToken;
   await user.save();
 
+  console.log('✅ Tokens refreshed successfully');
+  
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
@@ -130,7 +155,7 @@ export const logoutUser = async (userId, refreshToken) => {
     // Або видаляємо всі токени (logout з усіх пристроїв)
     user.refreshTokens = [];
   }
-  
+
   user.accessToken = '';
   await user.save();
 };

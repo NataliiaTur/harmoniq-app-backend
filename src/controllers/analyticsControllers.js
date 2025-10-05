@@ -85,7 +85,7 @@ export const trackEventController = async (req, res) => {
     session.follows.push({
       targetUserId: data.targetUserId,
       timestamp: new Date(),
-  }
+  });
 
   if (type === 'session_end' && data.totalTime) {
     session.endTime = new Date();

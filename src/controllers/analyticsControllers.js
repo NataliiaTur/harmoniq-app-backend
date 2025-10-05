@@ -1,4 +1,3 @@
-// src/controllers/analyticsControllers.js
 import { UserSessionCollection } from '../db/models/UserSession.js';
 import { ArticlesCollection } from '../db/models/article.js';
 import createError from 'http-errors';
@@ -42,19 +41,17 @@ export const createSessionController = async (req, res) => {
 export const trackEventController = async (req, res) => {
   const { sessionId, type, data } = req.body;
 
-  console.log('📊 Track event received:', { sessionId, type, data });
+  console.log('Track event received:', { sessionId, type, data });
 
   const session = await UserSessionCollection.findOne({ sessionId });
 
   if (!session) {
-    console.error('❌ Session not found:', sessionId);
+    console.error('Session not found:', sessionId);
     return res.status(404).json({ message: 'Session not found' });
   }
 
-  // Додаємо подію
   session.events.push({ type, data, timestamp: new Date() });
 
-  // Оновлюємо специфічні поля залежно від типу події
   if (type === 'page_view' && data.url && !session.pagesVisited.includes(data.url)) {
     session.pagesVisited.push(data.url);
   }
@@ -68,7 +65,7 @@ export const trackEventController = async (req, res) => {
   }
 
   if (type === 'add_to_favorites' && data.articleId && data.authorId) {
-    console.log('✅ Adding to favorites:', {
+    console.log('Adding to favorites:', {
       articleId: data.articleId,
       authorId: data.authorId
     });
@@ -85,7 +82,8 @@ export const trackEventController = async (req, res) => {
     session.follows.push({
       targetUserId: data.targetUserId,
       timestamp: new Date(),
-  });
+    });
+  }
 
   if (type === 'session_end' && data.totalTime) {
     session.endTime = new Date();
@@ -93,6 +91,7 @@ export const trackEventController = async (req, res) => {
   }
 
   await session.save();
+  console.log('Session saved successfully');
   res.status(200).json({ success: true });
 };
 

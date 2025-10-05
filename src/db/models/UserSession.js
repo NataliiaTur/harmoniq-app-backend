@@ -63,6 +63,10 @@ const userSessionSchema = new Schema(
       authorId: { type: Schema.Types.ObjectId, ref: 'User' },
       timestamp: Date,
     }],
+    follows: [{
+      targetUserId: { type: Schema.Types.ObjectId, ref : 'User'},
+      timestamp: Date,
+    }]
   },
   {
     collection: 'harmoniq-sessions',
@@ -74,5 +78,6 @@ const userSessionSchema = new Schema(
 // Індекси для швидкого пошуку
 userSessionSchema.index({ 'articlesViewed.authorId': 1, startTime: -1 });
 userSessionSchema.index({ 'addedToFavorites.authorId': 1, startTime: -1 });
+userSessionSchema.index({ 'follows.targetUserId': 1, startTime: -1 });
 
 export const UserSessionCollection = model('UserSession', userSessionSchema);

@@ -42,7 +42,6 @@ export const createSessionController = async (req, res) => {
 export const trackEventController = async (req, res) => {
   const { sessionId, type, data } = req.body;
 
-   // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
   console.log('📊 Track event received:', { sessionId, type, data });
 
   const session = await UserSessionCollection.findOne({ sessionId });
@@ -69,17 +68,23 @@ export const trackEventController = async (req, res) => {
   }
 
   if (type === 'add_to_favorites' && data.articleId && data.authorId) {
-    // ⭐ ДОДАЙТЕ ЛОГУВАННЯ
     console.log('✅ Adding to favorites:', {
       articleId: data.articleId,
       authorId: data.authorId
     });
-    
+
     session.addedToFavorites.push({
       articleId: data.articleId,
       authorId: data.authorId,
       timestamp: new Date(),
     });
+  }
+
+  if (type === 'follow' && data.targetUserId) {
+    console.log('Follow tracked:', { targetUserId: data.targetUserId });
+    session.follows.push({
+      targetUserId: data.targetUserId,
+      timestamp: new Date(),
   }
 
   if (type === 'session_end' && data.totalTime) {
@@ -95,6 +100,8 @@ export const getTeacherAnalyticsController = async (req, res) => {
   const teacherId = req.user.id;
   const { startDate, endDate } = req.query;
 
+  console.log('Analytics request from teacher:', teacherId);
+
   // Створюємо фільтр за датами
   const dateFilter = {};
   if (startDate) dateFilter.$gte = new Date(startDate);
@@ -104,6 +111,7 @@ export const getTeacherAnalyticsController = async (req, res) => {
     $or: [
       { 'articlesViewed.authorId': teacherId },
       { 'addedToFavorites.authorId': teacherId },
+      { 'follows.targetUserId': teacherId },
     ],
   };
 
@@ -111,9 +119,13 @@ export const getTeacherAnalyticsController = async (req, res) => {
     query.startTime = dateFilter;
   }
 
+  console.log('Query:', JSON.stringify(query));
+
   const sessions = await UserSessionCollection.find(query)
     .populate('articlesViewed.articleId', 'title img')
     .populate('addedToFavorites.articleId', 'title img');
+
+    console.log('Found sessions:', sessions.length);
 
   // Збираємо статистику
   const analytics = {
@@ -122,6 +134,7 @@ export const getTeacherAnalyticsController = async (req, res) => {
     trafficSources: {},
     popularArticles: {},
     favoritesCount: 0,
+    followersCount: 0,
     avgSessionDuration: 0,
     deviceBreakdown: { mobile: 0, desktop: 0, tablet: 0 },
     articleStats: {},
@@ -174,6 +187,12 @@ export const getTeacherAnalyticsController = async (req, res) => {
         }
       }
     });
+
+    session.follows.forEach((follow) => {
+      if (follow.targetUserId.toString() === teacherId) {
+        analytics.followersCount++;
+      }
+    });
   });
 
   // Обчислюємо середню тривалість
@@ -190,6 +209,12 @@ export const getTeacherAnalyticsController = async (req, res) => {
   analytics.topArticles = Object.values(analytics.articleStats)
     .sort((a, b) => b.views - a.views)
     .slice(0, 10);
+
+    console.log('Analytics computed:', {
+    visitors: analytics.totalVisitors,
+    favorites: analytics.favoritesCount,
+    followers: analytics.followersCount
+  });
 
   res.json(analytics);
 };
